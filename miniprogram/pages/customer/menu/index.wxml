@@ -1,0 +1,96 @@
+<view class="menu-page">
+  <view class="menu-banner">
+    <view class="banner-deco deco-a"></view>
+    <view class="banner-deco deco-b"></view>
+    <view class="hello">{{greetText}}</view>
+    <view class="banner-title">今天想吃什么？</view>
+    <view class="banner-sub">今日供应 {{dishTotal}} 道菜 · 现点现做，约 15 分钟出餐</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-line">正在翻菜单…</view>
+
+  <view wx:elif="{{loadError}}" class="state-block">
+    <view class="state-mark">!</view>
+    <view class="state-title">菜单没有加载出来</view>
+    <view class="state-desc">{{loadError}}</view>
+    <view class="state-action" bindtap="reload">重新加载</view>
+  </view>
+
+  <view wx:else class="menu-wrap">
+    <scroll-view class="cat-rail" scroll-y enhanced show-scrollbar="{{false}}">
+      <view class="cat {{activeCategory === 0 ? 'on' : ''}}" bindtap="onCategory" data-id="0">
+        <text>全部</text>
+      </view>
+      <view
+        wx:for="{{categories}}"
+        wx:key="id"
+        class="cat {{activeCategory === item.id ? 'on' : ''}}"
+        bindtap="onCategory"
+        data-id="{{item.id}}"
+      >
+        <text>{{item.nameZh}}</text>
+        <text class="cat-count">{{item.count}}</text>
+      </view>
+    </scroll-view>
+
+    <scroll-view class="dish-pane" scroll-y enhanced show-scrollbar="{{false}}">
+      <view class="pane-head">
+        <text class="pane-title">{{activeCategoryName}}</text>
+        <text class="tiny">{{filtered.length}} 道供应中</text>
+      </view>
+
+      <view
+        wx:for="{{filtered}}"
+        wx:key="id"
+        class="dish-card"
+        bindtap="goDish"
+        data-id="{{item.id}}"
+      >
+        <view class="dish-art-frame">
+          <dish-art image-key="{{item.imageKey}}" name="{{item.nameZh}}" />
+        </view>
+        <view class="dish-info">
+          <view class="dish-top">
+            <text class="dish-name ellipsis">{{item.nameZh}}</text>
+            <text wx:if="{{!item.isAvailable}}" class="pill pill-hidden">已下架</text>
+          </view>
+          <view class="dish-intro clamp-2">{{item.introZh || '现点现做，热乎上桌。'}}</view>
+          <view class="dish-meta">
+            <text class="pill pill-brand">{{item.categoryName || '本店菜品'}}</text>
+            <view wx:if="{{item.ratingCount}}" class="mini-rate">
+              <text class="mini-star">★</text>
+              <text>{{item.ratingText}}</text>
+              <text class="muted">({{item.ratingCount}})</text>
+            </view>
+            <text wx:else class="tiny">暂无评分</text>
+          </view>
+        </view>
+        <view
+          wx:if="{{item.isAvailable}}"
+          class="dish-add"
+          catchtap="addDish"
+          data-id="{{item.id}}"
+        >+</view>
+      </view>
+
+      <view wx:if="{{!filtered.length}}" class="state-block">
+        <view class="state-mark">空</view>
+        <view class="state-title">这个分类还没有菜</view>
+        <view class="state-desc">换个分类看看，或等小张上新。</view>
+      </view>
+
+      <view class="pane-bottom-space"></view>
+    </scroll-view>
+  </view>
+</view>
+
+<view wx:if="{{cartCount > 0}}" class="cart-float" bindtap="goCart">
+  <view class="cart-count">{{cartCount}}</view>
+  <view class="cart-info">
+    <view class="cart-main">已选 {{cartKinds}} 种 · {{cartCount}} 份</view>
+    <view class="cart-sub">不含金额，提交后商家看到做法与份数</view>
+  </view>
+  <view class="cart-go">去下单</view>
+</view>
+
+<tab-bar role="customer" active="menu" />

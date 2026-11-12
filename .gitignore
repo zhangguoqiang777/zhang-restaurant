@@ -1,0 +1,52 @@
+# 依赖
+node_modules/
+miniprogram_npm/
+
+# 构建产物
+server/dist/
+dist/
+build/
+*.tsbuildinfo
+
+# 本地环境变量（仅提交 .env.example）
+.env
+.env.*
+!.env.example
+
+# SQLite 数据库及运行时数据
+server/data/
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# 用户上传图片（保留演示占位图 server/uploads/seed/）
+server/uploads/*
+!server/uploads/seed/
+!server/uploads/seed/**
+
+# 日志
+*.log
+logs/
+
+# 密钥与本地证书
+*.pem
+*.key
+*.p12
+
+# 编辑器 / 系统临时文件
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+*.suo
+*.user
+.vscode/
+miniprogram/project.private.config.json
+
+# 工具临时产物
+.trae-html-share-packages/
+.screenshots/
+.trae/
+*.tmp

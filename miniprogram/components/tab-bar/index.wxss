@@ -1,0 +1,203 @@
+.tabbar {
+  --brand: #C0603C;
+  --ink-3: #9C8B7D;
+  --line-2: #F3EAE0;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  display: flex;
+  align-items: stretch;
+  height: calc(116rpx + env(safe-area-inset-bottom));
+  padding: 12rpx 12rpx env(safe-area-inset-bottom);
+  background: rgba(255, 252, 247, 0.97);
+  border-top: 1rpx solid var(--line-2);
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+  color: var(--ink-3);
+  font-size: 21rpx;
+  line-height: 1.2;
+}
+
+.tab.active {
+  color: var(--brand);
+  font-weight: 600;
+}
+
+.tab-ic {
+  position: relative;
+  width: 44rpx;
+  height: 44rpx;
+  color: currentColor;
+}
+
+.tab-ic::before,
+.tab-ic::after {
+  content: "";
+  position: absolute;
+  box-sizing: border-box;
+}
+
+/* 点餐：碗 + 热气 */
+.ic-bowl::before {
+  left: 3rpx;
+  right: 3rpx;
+  top: 18rpx;
+  height: 16rpx;
+  border: 3rpx solid currentColor;
+  border-top: 0;
+  border-radius: 0 0 20rpx 20rpx;
+}
+
+.ic-bowl::after {
+  left: 16rpx;
+  top: 7rpx;
+  width: 12rpx;
+  height: 9rpx;
+  border: 3rpx solid currentColor;
+  border-bottom: 0;
+  border-radius: 10rpx 10rpx 0 0;
+}
+
+/* 订单：小票 + 两行文字 */
+.ic-receipt::before {
+  left: 8rpx;
+  right: 8rpx;
+  top: 5rpx;
+  bottom: 5rpx;
+  border: 3rpx solid currentColor;
+  border-radius: 4rpx;
+}
+
+.ic-receipt::after {
+  left: 14rpx;
+  top: 14rpx;
+  width: 16rpx;
+  height: 3rpx;
+  background: currentColor;
+  box-shadow: 0 10rpx 0 currentColor;
+}
+
+/* 日历 */
+.ic-cal::before {
+  left: 5rpx;
+  right: 5rpx;
+  top: 7rpx;
+  bottom: 5rpx;
+  border: 3rpx solid currentColor;
+  border-radius: 7rpx;
+}
+
+.ic-cal::after {
+  left: 8rpx;
+  right: 8rpx;
+  top: 17rpx;
+  height: 3rpx;
+  background: currentColor;
+}
+
+/* 我的 */
+.ic-user::before {
+  left: 13rpx;
+  top: 5rpx;
+  width: 18rpx;
+  height: 18rpx;
+  border: 3rpx solid currentColor;
+  border-radius: 50%;
+}
+
+.ic-user::after {
+  left: 7rpx;
+  bottom: 5rpx;
+  width: 30rpx;
+  height: 15rpx;
+  border: 3rpx solid currentColor;
+  border-bottom: 0;
+  border-radius: 20rpx 20rpx 0 0;
+}
+
+/* 看板：网格 */
+.ic-board::before {
+  left: 6rpx;
+  right: 6rpx;
+  top: 6rpx;
+  bottom: 6rpx;
+  border: 3rpx solid currentColor;
+  border-radius: 7rpx;
+  background: linear-gradient(currentColor, currentColor) center / 3rpx 100% no-repeat;
+}
+
+.ic-board::after {
+  left: 9rpx;
+  right: 9rpx;
+  top: 21rpx;
+  height: 3rpx;
+  background: currentColor;
+}
+
+/* 采购：篮子 */
+.ic-basket::before {
+  left: 7rpx;
+  right: 7rpx;
+  top: 18rpx;
+  bottom: 7rpx;
+  border: 3rpx solid currentColor;
+  border-radius: 0 0 9rpx 9rpx;
+}
+
+.ic-basket::after {
+  left: 14rpx;
+  top: 7rpx;
+  width: 16rpx;
+  height: 12rpx;
+  border: 3rpx solid currentColor;
+  border-bottom: 0;
+  border-radius: 10rpx 10rpx 0 0;
+}
+
+/* 菜品：盘子 */
+.ic-dish::before {
+  left: 5rpx;
+  top: 5rpx;
+  width: 34rpx;
+  height: 34rpx;
+  border: 3rpx solid currentColor;
+  border-radius: 50%;
+}
+
+.ic-dish::after {
+  left: 15rpx;
+  top: 15rpx;
+  width: 14rpx;
+  height: 14rpx;
+  border: 3rpx solid currentColor;
+  border-radius: 50%;
+}
+
+/* 授权：盾牌 + 勾 */
+.ic-shield::before {
+  left: 11rpx;
+  top: 5rpx;
+  width: 22rpx;
+  height: 26rpx;
+  border: 3rpx solid currentColor;
+  border-radius: 11rpx 11rpx 13rpx 13rpx;
+}
+
+.ic-shield::after {
+  left: 18rpx;
+  top: 16rpx;
+  width: 8rpx;
+  height: 5rpx;
+  border-left: 3rpx solid currentColor;
+  border-bottom: 3rpx solid currentColor;
+  transform: rotate(-45deg);
+}

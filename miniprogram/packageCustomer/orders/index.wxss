@@ -1,0 +1,18 @@
+.orders-page {
+  min-height: 100vh;
+  padding: 24rpx 32rpx 0;
+  background: var(--bg);
+}
+
+.page-head {
+  padding: 6rpx 4rpx 18rpx;
+}
+
+.page-head .t-page {
+  margin-bottom: 6rpx;
+}
+
+.oc-actions .mini-btn {
+  height: 54rpx;
+  padding: 0 20rpx;
+}

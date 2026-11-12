@@ -1,0 +1,70 @@
+{
+  "description": "小张的餐厅 · 微信小程序（原生 TypeScript）",
+  "projectname": "zhang-restaurant",
+  "appid": "wxd669baa949752f7c",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "./",
+  "libVersion": "3.4.0",
+  "setting": {
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "urlCheck": false,
+    "coverView": true,
+    "useCompilerPlugins": [
+      "typescript"
+    ],
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "condition": false
+  },
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "入口",
+          "pathName": "pages/entry/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "客户菜单",
+          "pathName": "pages/customer/menu/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "商家订单看板",
+          "pathName": "packageMerchant/board/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "超级用户授权",
+          "pathName": "packageAdmin/users/index",
+          "query": "",
+          "scene": null
+        }
+      ]
+    }
+  },
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "editorSetting": {}
+}

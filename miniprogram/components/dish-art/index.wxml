@@ -1,0 +1,10 @@
+<view class="dish-art tone-{{tone}}">
+  <image wx:if="{{src}}" class="art-img" src="{{src}}" mode="aspectFill" />
+  <view wx:else class="art-css">
+    <view class="plate">
+      <view class="food">
+        <text class="glyph">{{glyph}}</text>
+      </view>
+    </view>
+  </view>
+</view>

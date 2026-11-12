@@ -1,0 +1,111 @@
+<view class="edit-page page-with-bottom">
+  <view wx:if="{{loading}}" class="loading-line">正在准备表单…</view>
+
+  <view wx:elif="{{error}}" class="state-block">
+    <view class="state-mark">!</view>
+    <view class="state-title">表单没有加载出来</view>
+    <view class="state-desc">{{error}}</view>
+    <view class="state-action" bindtap="retry">重新加载</view>
+  </view>
+
+  <block wx:else>
+    <view class="form-group">
+      <view class="form-label">菜品名称<text class="req">必填</text></view>
+      <input
+        class="form-input"
+        value="{{name}}"
+        maxlength="30"
+        placeholder="例如：番茄炒蛋"
+        placeholder-class="input-ph"
+        bindinput="onName"
+      />
+    </view>
+
+    <view class="form-group">
+      <view class="form-label">分类<text class="req">必填</text></view>
+      <view wx:if="{{categories.length}}" class="chip-select">
+        <view
+          wx:for="{{categories}}"
+          wx:key="id"
+          class="chip {{categoryId === item.id ? 'on' : ''}} {{item.isActive ? '' : 'inactive'}}"
+          bindtap="pickCategory"
+          data-id="{{item.id}}"
+        >{{item.nameZh}}{{item.isActive ? '' : '（停用）'}}</view>
+      </view>
+      <view wx:else class="form-hint warn">还没有分类，请先在菜品管理的「分类管理」里新增。</view>
+    </view>
+
+    <view class="form-group">
+      <view class="form-label">
+        <text>简介</text>
+        <text class="counter">{{introLen}}/{{introLimit}}</text>
+      </view>
+      <textarea
+        class="form-textarea"
+        value="{{intro}}"
+        maxlength="{{introLimit}}"
+        placeholder="一句话介绍口味或做法，会展示在客户菜单"
+        placeholder-class="input-ph"
+        bindinput="onIntro"
+      />
+    </view>
+
+    <view class="form-group">
+      <view class="form-label">菜品图片<text class="req">建议 1:1</text></view>
+      <view wx:if="{{imageKey}}" class="upload-box">
+        <view class="art-frame up-preview">
+          <dish-art image-key="{{imageKey}}" name="{{name || '菜'}}" />
+        </view>
+        <view class="up-main">
+          <view class="up-title">已上传 1 张图片</view>
+          <view class="tiny">JPG / PNG · 建议不超过 5MB</view>
+          <view class="up-links">
+            <text class="up-link" bindtap="chooseImage">{{uploading ? '上传中…' : '更换图片 ›'}}</text>
+            <text class="up-link danger" bindtap="removeImage">移除</text>
+          </view>
+        </view>
+      </view>
+      <view wx:else class="upload-empty" bindtap="chooseImage">
+        <view class="up-plus">＋</view>
+        <view class="up-main">
+          <view class="up-title">{{uploading ? '正在上传…' : '上传菜品图片'}}</view>
+          <view class="tiny">不上传时客户端展示餐盘插画</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <view class="form-label">
+        <text>食材配方</text>
+        <text class="req">用于采购清单 · 已选 {{selectedCount}}</text>
+      </view>
+      <view class="chip-select">
+        <view
+          wx:for="{{ingredients}}"
+          wx:key="id"
+          class="chip {{item.selected ? 'on' : ''}} {{item.isActive ? '' : 'inactive'}}"
+          bindtap="toggleIngredient"
+          data-id="{{item.id}}"
+        >{{item.nameZh}}{{item.isActive ? '' : '（停用）'}}</view>
+        <view class="chip add" bindtap="addIngredient">＋ 新建食材</view>
+      </view>
+      <view class="form-hint">只记录“需要哪些食材”，不记录用量与单位；未配置配方的菜品不会进入采购清单。</view>
+    </view>
+
+    <view class="switch-row">
+      <view class="sr-main">
+        <view class="sr-title">{{isEdit ? '当前在售' : '保存后立即上架'}}</view>
+        <view class="tiny">客户菜单仅展示上架菜品</view>
+      </view>
+      <view class="switch {{isAvailable ? 'on' : ''}}" bindtap="toggleAvailable"></view>
+    </view>
+
+    <view class="edit-note">菜品不设价格与成本；图片与配方保存后会立即同步到客户菜单和采购清单。</view>
+  </block>
+</view>
+
+<view wx:if="{{!loading && !error}}" class="bottom-bar">
+  <view class="brand-btn {{submitting ? 'disabled' : ''}}" bindtap="save">
+    {{submitting ? '保存中…' : '保存菜品'}}
+  </view>
+</view>

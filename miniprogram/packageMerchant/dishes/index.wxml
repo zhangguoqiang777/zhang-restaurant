@@ -1,0 +1,103 @@
+<view class="dishes-page page-with-tab">
+  <view class="toolbar">
+    <view class="search-box">
+      <view class="search-icon"></view>
+      <input
+        class="search-input"
+        value="{{keyword}}"
+        placeholder="搜索菜品名称"
+        placeholder-class="input-ph"
+        confirm-type="search"
+        bindinput="onKeyword"
+      />
+      <text wx:if="{{keyword}}" class="clear-btn" catchtap="clearKeyword">×</text>
+    </view>
+    <view class="mini-btn primary add-btn" bindtap="goEdit">＋ 新增</view>
+  </view>
+
+  <view class="seg">
+    <view class="seg-item {{filter === 'all' ? 'on' : ''}}" bindtap="setFilter" data-filter="all">
+      全部 {{counts.all}}
+    </view>
+    <view class="seg-item {{filter === 'on' ? 'on' : ''}}" bindtap="setFilter" data-filter="on">
+      在售 {{counts.on}}
+    </view>
+    <view class="seg-item {{filter === 'off' ? 'on' : ''}}" bindtap="setFilter" data-filter="off">
+      已下架 {{counts.off}}
+    </view>
+  </view>
+
+  <view class="manage-links">
+    <view class="ml-btn" bindtap="toggleCategoryPanel">
+      <text>分类管理</text>
+      <text class="ml-arrow {{categoryOpen ? 'up' : ''}}"></text>
+    </view>
+    <view class="ml-btn" bindtap="goIngredients">
+      <text>食材库</text>
+      <text class="ml-chevron"></text>
+    </view>
+  </view>
+
+  <view wx:if="{{categoryOpen}}" class="category-panel card">
+    <view class="cp-head">
+      <text class="cp-title">分类（{{categories.length}}）</text>
+      <view class="mini-btn soft" bindtap="addCategory">{{categoryBusy ? '处理中…' : '＋ 新增分类'}}</view>
+    </view>
+    <view wx:for="{{categories}}" wx:key="id" class="cat-row">
+      <view class="cat-main">
+        <view class="cat-name {{item.isActive ? '' : 'off'}}">{{item.nameZh}}</view>
+        <view class="tiny">{{item.dishCount}} 道菜 · 排序 {{item.sortOrder}}</view>
+      </view>
+      <view class="cat-actions">
+        <view class="cat-move {{index === 0 ? 'disabled' : ''}}" catchtap="moveCategory" data-id="{{item.id}}" data-delta="-1">↑</view>
+        <view class="cat-move {{index === categories.length - 1 ? 'disabled' : ''}}" catchtap="moveCategory" data-id="{{item.id}}" data-delta="1">↓</view>
+        <view class="mini-btn" catchtap="renameCategory" data-id="{{item.id}}">改名</view>
+        <view class="switch {{item.isActive ? 'on' : ''}} {{categoryBusy ? 'disabled' : ''}}" catchtap="toggleCategory" data-id="{{item.id}}"></view>
+      </view>
+    </view>
+    <view class="form-hint">停用分类后，客户菜单不再展示该分类；已下架或停用的分类不会影响历史订单。</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-line">正在取菜品…</view>
+
+  <view wx:elif="{{error}}" class="state-block">
+    <view class="state-mark">!</view>
+    <view class="state-title">菜品没有加载出来</view>
+    <view class="state-desc">{{error}}</view>
+    <view class="state-action" bindtap="retry">重新加载</view>
+  </view>
+
+  <view wx:elif="{{!dishes.length}}" class="state-block">
+    <view class="state-mark">菜</view>
+    <view class="state-title">{{keyword ? '没有匹配的菜品' : '还没有菜品'}}</view>
+    <view class="state-desc">{{keyword ? '换个关键词试试，或清空搜索看全部菜品。' : '新增第一道菜，配上食材后就会进入采购清单。'}}</view>
+    <view wx:if="{{!keyword}}" class="state-action" bindtap="goEdit">新增菜品</view>
+  </view>
+
+  <block wx:else>
+    <view
+      wx:for="{{dishes}}"
+      wx:key="id"
+      class="manage-item {{item.isAvailable ? '' : 'off'}}"
+      bindtap="goEdit"
+      data-id="{{item.id}}"
+    >
+      <view class="art-frame">
+        <dish-art image-key="{{item.imageKey}}" name="{{item.nameZh}}" />
+      </view>
+      <view class="mi-main">
+        <view class="mi-name">{{item.nameZh}}</view>
+        <view class="mi-sub">{{item.summary}}</view>
+      </view>
+      <view
+        class="switch {{item.isAvailable ? 'on' : ''}} {{togglingId === item.id ? 'disabled' : ''}}"
+        catchtap="toggleDish"
+        data-id="{{item.id}}"
+      ></view>
+    </view>
+
+    <view class="purchase-note">菜品没有价格与成本字段。未配置食材的菜品不会进入采购清单，编辑页会提示。</view>
+  </block>
+</view>
+
+<tab-bar role="{{viewRole}}" active="dishes" />

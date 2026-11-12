@@ -1,0 +1,106 @@
+.edit-page {
+  min-height: 100vh;
+  padding: 24rpx 32rpx 0;
+  background: var(--bg);
+}
+
+.edit-page .form-group {
+  margin-bottom: 32rpx;
+}
+
+.counter {
+  font-size: var(--fs-weak);
+  font-weight: 400;
+  color: var(--ink-3);
+}
+
+.chip.inactive {
+  opacity: 0.62;
+  text-decoration: line-through;
+}
+
+.upload-box {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  padding: 20rpx;
+  border-radius: var(--r-md);
+  border: 1rpx dashed var(--dashed);
+  background: var(--field-soft);
+}
+
+.up-preview {
+  width: 144rpx;
+  height: 144rpx;
+}
+
+.up-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.up-title {
+  font-size: var(--fs-sub);
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.up-links {
+  display: flex;
+  gap: 28rpx;
+  margin-top: 12rpx;
+}
+
+.up-link {
+  font-size: var(--fs-tiny);
+  color: var(--brand-deep);
+}
+
+.up-link.danger {
+  color: var(--rose);
+}
+
+.upload-empty {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  padding: 30rpx 24rpx;
+  border-radius: var(--r-md);
+  border: 1rpx dashed var(--dashed);
+  background: var(--field-soft);
+}
+
+.up-plus {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  border: 1rpx dashed var(--dashed);
+  color: var(--brand);
+  font-size: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  padding: 24rpx 4rpx 8rpx;
+}
+
+.sr-title {
+  font-size: var(--fs-sub);
+  font-weight: 600;
+  margin-bottom: 4rpx;
+}
+
+.edit-note {
+  margin: 20rpx 4rpx 32rpx;
+  font-size: var(--fs-weak);
+  line-height: 1.65;
+  color: var(--ink-3);
+}

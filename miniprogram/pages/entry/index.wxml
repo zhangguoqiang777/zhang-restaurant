@@ -1,0 +1,62 @@
+<view class="entry" style="padding-top: {{topPad}}px;">
+  <view class="hero">
+    <view class="brand-row">
+      <view class="brand-mark">
+        <view class="bowl"></view>
+        <view class="steam steam-a"></view>
+        <view class="steam steam-b"></view>
+      </view>
+      <text class="brand-name">小张的餐厅</text>
+    </view>
+    <view class="hero-title"><text>先选一个身份，</text><text>再开始这一顿。</text></view>
+    <view class="hero-sub"><text>一个人做饭，一个人吃饭。</text><text>下单、接单、采购，都在这里。</text></view>
+    <view class="saved-line">
+      <view class="lock-ic"></view>
+      <text wx:if="{{user}}">登录状态已保存 · 用户 #{{user.id}}</text>
+      <text wx:else>正在静默登录…</text>
+    </view>
+  </view>
+
+  <view class="body">
+    <view wx:if="{{loading}}" class="loading-line">正在获取身份…</view>
+
+    <view wx:elif="{{error}}" class="error-card card">
+      <view class="error-title">登录没有完成</view>
+      <view class="error-desc">{{error}}</view>
+      <view class="ghost-btn" bindtap="retry">重试登录</view>
+      <view class="tiny center error-tip">请确认后端服务已启动；也可以稍后到「我的 → 开发设置」检查接口地址。</view>
+    </view>
+
+    <block wx:else>
+      <view
+        wx:for="{{roles}}"
+        wx:key="key"
+        class="role-card {{selected === item.key ? 'selected' : ''}}"
+        bindtap="onSelect"
+        data-key="{{item.key}}"
+      >
+        <view class="role-ic {{item.iconClass}}">{{item.glyph}}</view>
+        <view class="role-main">
+          <view class="role-title">{{item.title}}</view>
+          <view class="role-desc">{{item.desc}}</view>
+        </view>
+        <view class="radio {{selected === item.key ? 'on' : ''}}">
+          <view class="radio-dot"></view>
+        </view>
+      </view>
+
+      <view class="role-note">
+        <view class="note-dot">i</view>
+        <text>切换视角不换账号。商家与超级用户入口由超级用户在「用户授权」中开启，开启后立即生效。</text>
+      </view>
+      <view class="entry-foot">进入后可在「我的」再次切换视角</view>
+    </block>
+  </view>
+</view>
+
+<view class="bottom-bar" wx:if="{{!loading && !error && roles.length}}">
+  <button class="brand-btn" bindtap="enter" disabled="{{entering}}">
+    <text>{{entering ? '正在进入…' : buttonText}}</text>
+    <view wx:if="{{!entering}}" class="arrow"></view>
+  </button>
+</view>

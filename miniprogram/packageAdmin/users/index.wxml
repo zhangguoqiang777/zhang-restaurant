@@ -1,0 +1,67 @@
+<view class="admin-page page-with-tab">
+  <view class="admin-hero">
+    <view class="ah-main">
+      <view class="ah-title">商家端访问授权</view>
+      <view class="ah-desc">从已登录用户中选择，开启后对方可进入商家视角，撤销立即生效。</view>
+    </view>
+    <view class="admin-badge">超级用户</view>
+  </view>
+
+  <view class="search-box admin-search">
+    <view class="search-icon"></view>
+    <input
+      class="search-input"
+      value="{{keyword}}"
+      placeholder="搜索昵称或 openid"
+      placeholder-class="input-ph"
+      confirm-type="search"
+      bindinput="onKeyword"
+    />
+    <text wx:if="{{keyword}}" class="clear-btn" catchtap="clearKeyword">×</text>
+  </view>
+
+  <view wx:if="{{!loading && !error}}" class="list-count">共 {{total}} 位已登录用户</view>
+
+  <view wx:if="{{loading}}" class="loading-line">正在取用户…</view>
+
+  <view wx:elif="{{error}}" class="state-block">
+    <view class="state-mark">!</view>
+    <view class="state-title">用户列表没有加载出来</view>
+    <view class="state-desc">{{error}}</view>
+    <view class="state-action" bindtap="retry">重新加载</view>
+  </view>
+
+  <view wx:elif="{{!users.length}}" class="state-block">
+    <view class="state-mark">权</view>
+    <view class="state-title">{{keyword ? '没有匹配的用户' : '还没有其他登录用户'}}</view>
+    <view class="state-desc">{{keyword ? '换个昵称或 openid 片段试试。' : '用户第一次打开小程序并登录后会出现在这里。'}}</view>
+    <view wx:if="{{keyword}}" class="state-action" bindtap="clearKeyword">清空搜索</view>
+  </view>
+
+  <block wx:else>
+    <view wx:for="{{users}}" wx:key="id" class="user-row">
+      <view class="avatar {{item.avatarClass}}">{{item.avatarChar}}</view>
+      <view class="meta">
+        <view class="n">
+          <text>{{item.nickname || ('用户 #' + item.id)}}</text>
+          <text wx:if="{{item.isSelf}}" class="me-tag">我</text>
+          <text wx:if="{{item.isSuper}}" class="super-tag">超管</text>
+        </view>
+        <view class="id">{{item.openidMasked ? 'openid ' + item.openidMasked : '用户 #' + item.id}}</view>
+        <view class="last">{{item.lastText}} · {{item.statusText}}</view>
+      </view>
+      <view
+        class="switch {{item.canMerchant || item.isSuper ? 'on' : ''}} {{item.locked || busyId === item.id ? 'disabled' : ''}}"
+        bindtap="toggleAccess"
+        data-id="{{item.id}}"
+      ></view>
+    </view>
+
+    <view class="admin-note">
+      <text class="note-dot">i</text>
+      <text>权限每次请求实时查询，撤销后立即生效，不用等登录过期。超级用户身份不能通过此页授予或转让。</text>
+    </view>
+  </block>
+</view>
+
+<tab-bar role="admin" active="users" />

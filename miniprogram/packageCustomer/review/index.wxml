@@ -1,0 +1,125 @@
+<view class="review-page page-with-bottom">
+  <view wx:if="{{loading}}" class="loading-line">正在取这一餐…</view>
+
+  <view wx:elif="{{error}}" class="state-block">
+    <view class="state-mark">!</view>
+    <view class="state-title">没有加载出来</view>
+    <view class="state-desc">{{error}}</view>
+    <view class="state-action" bindtap="load">重新加载</view>
+  </view>
+
+  <block wx:elif="{{order}}">
+    <view class="review-hero">
+      <view class="rh-eyebrow">订单 #{{order.id}}</view>
+      <view class="rh-title">{{existing ? '这一餐的评价' : '这一餐，怎么样？'}}</view>
+      <view class="rh-sub">{{existing ? '评价已提交，不能重复修改。' : '打星是必填，文字可以留白。'}}</view>
+    </view>
+
+    <view wx:if="{{existing}}" class="card existing-card">
+      <view class="between">
+        <view class="stars stars-lg">
+          <text wx:for="{{stars}}" wx:key="*this" class="{{item <= existing.rating ? 'on' : ''}}">★</text>
+        </view>
+        <text class="tiny">{{existing.createdText}}</text>
+      </view>
+      <view wx:if="{{existing.content}}" class="existing-text">{{existing.content}}</view>
+      <view class="divider"></view>
+      <view wx:for="{{existing.items}}" wx:key="dishId" class="existing-item">
+        <view class="between">
+          <text class="ei-name">{{item.nameZh}}</text>
+          <view class="stars stars-sm">
+            <text
+              wx:for="{{stars}}"
+              wx:for-item="s"
+              wx:key="*this"
+              class="{{s <= item.rating ? 'on' : ''}}"
+            >★</text>
+          </view>
+        </view>
+        <view wx:if="{{item.content}}" class="ei-content">{{item.content}}</view>
+      </view>
+    </view>
+
+    <block wx:else>
+      <view class="card form-card">
+        <view class="form-label">
+          <text>整体评分</text>
+          <text class="req">必填</text>
+        </view>
+        <view class="tap-stars">
+          <text
+            wx:for="{{stars}}"
+            wx:key="*this"
+            class="tap-star {{item <= rating ? 'on' : ''}}"
+            bindtap="setRating"
+            data-star="{{item}}"
+          >★</text>
+        </view>
+        <view class="rating-word">{{ratingText}}</view>
+
+        <view class="form-label content-label">
+          <text>说两句</text>
+          <text class="tiny">{{contentLen}}/120</text>
+        </view>
+        <textarea
+          class="form-textarea"
+          value="{{content}}"
+          maxlength="120"
+          placeholder="这一餐哪里好，哪里还能更好？"
+          placeholder-class="input-ph"
+          bindinput="onContent"
+        />
+      </view>
+
+      <view class="section-head">
+        <text class="title">逐道打分</text>
+        <text class="more">可选</text>
+      </view>
+
+      <view class="card dish-card">
+        <view
+          wx:for="{{items}}"
+          wx:for-item="dish"
+          wx:for-index="dishIndex"
+          wx:key="dishId"
+          class="dish-review"
+        >
+          <view class="between">
+            <text class="dr-name">{{dish.nameZh}}</text>
+            <view class="stars stars-sm">
+              <text
+                wx:for="{{stars}}"
+                wx:for-item="s"
+                wx:for-index="si"
+                wx:key="*this"
+                class="{{s <= dish.rating ? 'on' : ''}}"
+                bindtap="setItemRating"
+                data-index="{{dishIndex}}"
+                data-star="{{s}}"
+              >★</text>
+            </view>
+          </view>
+          <input
+            class="dr-input"
+            value="{{dish.content}}"
+            maxlength="40"
+            placeholder="这道菜怎么样？（可选）"
+            placeholder-class="input-ph"
+            bindinput="onItemContent"
+            data-index="{{dishIndex}}"
+          />
+        </view>
+      </view>
+
+      <view class="note-line">
+        <view class="note-dot">i</view>
+        <text>评价会展示在菜品详情里；文字请尽量具体，帮助下一次做得更好。</text>
+      </view>
+    </block>
+  </block>
+</view>
+
+<view class="bottom-bar" wx:if="{{order}}">
+  <button wx:if="{{existing}}" class="ghost-btn" bindtap="back">返回订单</button>
+  <button wx:else class="brand-btn" bindtap="submit" disabled="{{saving}}">{{saving ? '提交中…' : '提交评价'}}</button>
+</view>

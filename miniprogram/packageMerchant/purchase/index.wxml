@@ -1,0 +1,67 @@
+<view class="purchase-page page-with-tab">
+  <view class="purchase-head">
+    <view class="ph-title">采购清单</view>
+    <view class="ph-sub">按下单时的食材快照汇总，已排除取消订单</view>
+  </view>
+
+  <view class="date-bar card">
+    <view class="date-nav" bindtap="changeDate" data-delta="-1">
+      <view class="chevron left"></view>
+    </view>
+    <picker mode="date" value="{{date}}" bindchange="onDateChange" class="date-picker">
+      <view class="date-value">
+        <text>{{dateLabel}}</text>
+        <text wx:if="{{isToday}}" class="today-tag">今天</text>
+      </view>
+    </picker>
+    <view class="date-nav" bindtap="changeDate" data-delta="1">
+      <view class="chevron right"></view>
+    </view>
+  </view>
+
+  <view class="purchase-hero">
+    <view class="hero-title">{{isToday ? '今天要备这些' : '这天要备这些'}}</view>
+    <view class="hero-desc">只记录需要哪些食材，不提供数量、单位与成本</view>
+    <view class="counts">
+      <view class="c"><text class="num">{{orderCount}}</text><text class="unit">单</text></view>
+      <view class="c"><text class="num">{{ingredientCount}}</text><text class="unit">种食材</text></view>
+      <view class="c"><text class="num">去重</text><text class="unit">展示</text></view>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-line">正在汇总食材…</view>
+
+  <view wx:elif="{{error}}" class="state-block">
+    <view class="state-mark">!</view>
+    <view class="state-title">采购清单没有加载出来</view>
+    <view class="state-desc">{{error}}</view>
+    <view class="state-action" bindtap="retry">重新加载</view>
+  </view>
+
+  <view wx:elif="{{!items.length}}" class="state-block">
+    <view class="state-mark">采</view>
+    <view class="state-title">{{isToday ? '今天还没有需要备的食材' : '这一天没有需要备的食材'}}</view>
+    <view class="state-desc">客户下单后，菜品配方里的食材会自动汇总到这里。</view>
+    <view class="state-action" bindtap="goToday">回到今天</view>
+  </view>
+
+  <block wx:else>
+    <view wx:for="{{items}}" wx:key="ingredientId" class="ing-row">
+      <view class="ing-icon">{{item.glyph}}</view>
+      <view class="ing-main">
+        <view class="iname">{{item.nameZh}}</view>
+        <view class="isub">{{item.subText}}</view>
+      </view>
+      <view class="orders">
+        <text wx:for="{{item.chips}}" wx:for-item="chip" wx:key="*this" class="o">{{chip}}</text>
+        <text wx:if="{{item.moreCount}}" class="o">+{{item.moreCount}}</text>
+      </view>
+    </view>
+
+    <view class="purchase-note">
+      采购清单只记录“需要哪些食材”，不提供数量、单位、库存与成本；同一食材多单只显示一条。订单取消后会自动从清单移除。
+    </view>
+  </block>
+</view>
+
+<tab-bar role="{{viewRole}}" active="purchase" />

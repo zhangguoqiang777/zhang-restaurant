@@ -1,0 +1,118 @@
+<view class="board-page page-with-tab">
+  <view class="board-head">
+    <view class="bh-title">订单看板</view>
+    <view class="bh-sub">按日期看单，先处理待接单，再完成制作</view>
+  </view>
+
+  <view class="date-bar card">
+    <view class="date-nav" bindtap="prevDay">
+      <view class="chevron left"></view>
+    </view>
+    <picker mode="date" value="{{date}}" bindchange="onDateChange" class="date-picker">
+      <view class="date-value">
+        <text>{{dateLabel}}</text>
+        <text wx:if="{{isToday}}" class="today-tag">今天</text>
+      </view>
+    </picker>
+    <view class="date-nav" bindtap="nextDay">
+      <view class="chevron right"></view>
+    </view>
+  </view>
+
+  <view class="stat-row">
+    <view class="stat-card pending">
+      <view class="stat-num">{{stats.pending}}</view>
+      <view class="stat-label">待处理</view>
+    </view>
+    <view class="stat-card cooking">
+      <view class="stat-num">{{stats.cooking}}</view>
+      <view class="stat-label">制作中</view>
+    </view>
+    <view class="stat-card completed">
+      <view class="stat-num">{{stats.completed}}</view>
+      <view class="stat-label">已完成</view>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-line">正在取单…</view>
+
+  <view wx:elif="{{error}}" class="state-block">
+    <view class="state-mark">!</view>
+    <view class="state-title">看板没有加载出来</view>
+    <view class="state-desc">{{error}}</view>
+    <view class="state-action" bindtap="retry">重新加载</view>
+  </view>
+
+  <view wx:elif="{{!stats.pending && !stats.cooking && !stats.completed}}" class="state-block">
+    <view class="state-mark">单</view>
+    <view class="state-title">{{isToday ? '今天还没有订单' : '这一天没有订单'}}</view>
+    <view class="state-desc">客户下单后会出现在这里，页面每 30 秒自动刷新。</view>
+    <view class="state-action" bindtap="goToday">回到今天</view>
+  </view>
+
+  <block wx:else>
+    <block wx:for="{{groups}}" wx:for-item="group" wx:key="key">
+      <block wx:if="{{group.orders.length}}">
+        <view class="group-head">
+          <view class="gh-left">
+            <view class="gh-dot {{group.key}}"></view>
+            <text class="gh-title">{{group.title}}</text>
+            <text class="gh-count">{{group.orders.length}}</text>
+          </view>
+          <text class="tiny">{{group.hint}}</text>
+        </view>
+
+        <view
+          wx:for="{{group.orders}}"
+          wx:for-item="order"
+          wx:key="id"
+          class="order-card gorder"
+          bindtap="goDetail"
+          data-id="{{order.id}}"
+        >
+          <view class="oc-top">
+            <text class="oc-no">#{{order.id}} · {{order.timeText}}</text>
+            <text class="pill {{order.pillClass}}">{{order.statusText}}</text>
+          </view>
+
+          <view class="customer-row">
+            <view class="avatar sm {{order.status === 'completed' ? 'green' : ''}}">{{order.avatarChar}}</view>
+            <view class="customer-main">
+              <view class="customer-name">{{order.customerName}}</view>
+              <view class="tiny">用户 #{{order.customerId}}</view>
+            </view>
+            <text class="tiny">{{order.totalQty}} 份</text>
+          </view>
+
+          <view class="g-items">
+            <view wx:for="{{order.items}}" wx:for-item="dish" wx:key="dishId" class="g-item">
+              <text class="gi-name">{{dish.nameZh}}</text>
+              <text class="gi-qty">× {{dish.qty}}</text>
+            </view>
+          </view>
+
+          <view wx:if="{{order.remark}}" class="remark-mini">
+            <text class="rm-label">备注</text>
+            <text class="rm-text">{{order.remark}}</text>
+          </view>
+
+          <view class="gfoot">
+            <text class="gfoot-note">{{order.footHint}}</text>
+            <view class="g-actions">
+              <view class="mini-btn" catchtap="goDetail" data-id="{{order.id}}">详情</view>
+              <view
+                wx:if="{{order.status !== 'completed'}}"
+                class="mini-btn primary"
+                catchtap="advance"
+                data-id="{{order.id}}"
+                data-action="{{order.status === 'pending' ? 'start' : 'complete'}}"
+              >{{processingId === order.id ? '处理中…' : (order.status === 'pending' ? '开始制作' : '完成制作')}}</view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </block>
+  </block>
+</view>
+
+<tab-bar role="{{viewRole}}" active="board" />

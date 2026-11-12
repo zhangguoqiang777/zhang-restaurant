@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "处理订单",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "dish-art": "/components/dish-art/index"
+  }
+}

@@ -1,0 +1,107 @@
+<view class="dish-page page-with-bottom">
+  <view wx:if="{{loading}}" class="loading-line">正在端上来…</view>
+
+  <view wx:elif="{{error}}" class="state-block">
+    <view class="state-mark">!</view>
+    <view class="state-title">菜品没有加载出来</view>
+    <view class="state-desc">{{error}}</view>
+    <view class="state-action" bindtap="load">重新加载</view>
+  </view>
+
+  <block wx:elif="{{dish}}">
+    <view class="dish-hero">
+      <dish-art image-key="{{dish.imageKey}}" name="{{dish.nameZh}}" />
+      <view wx:if="{{!dish.isAvailable}}" class="off-mask">
+        <text>本菜品已下架</text>
+      </view>
+    </view>
+
+    <view class="sheet">
+      <view class="title-row">
+        <view class="title-main">
+          <view class="dish-title">{{dish.nameZh}}</view>
+          <view class="dish-sub" wx:if="{{dish.categoryName}}">{{dish.categoryName}}</view>
+        </view>
+        <view wx:if="{{rating.count}}" class="rating-box">
+          <view class="rating-num">{{ratingText}}</view>
+          <view class="stars stars-sm">
+            <text
+              wx:for="{{stars}}"
+              wx:key="*this"
+              class="{{item <= filledStars ? 'on' : ''}}"
+            >★</text>
+          </view>
+          <view class="tiny">{{rating.count}} 条评价</view>
+        </view>
+        <view wx:else class="rating-box empty">
+          <view class="rating-num muted">—</view>
+          <view class="tiny">暂无评分</view>
+        </view>
+      </view>
+
+      <view class="intro">{{dish.introZh || '现点现做，热乎上桌。'}}</view>
+
+      <view class="tag-row">
+        <text class="pill pill-brand">{{dish.categoryName || '本店菜品'}}</text>
+        <text class="pill pill-soft">现点现做</text>
+        <text wx:if="{{dish.ingredientCount}}" class="pill pill-soft">含 {{dish.ingredientCount}} 种食材</text>
+      </view>
+
+      <view class="block">
+        <view class="block-head">
+          <text class="block-title">食材</text>
+          <text class="tiny">按菜品配置</text>
+        </view>
+        <view wx:if="{{dish.ingredients.length}}" class="ing-list">
+          <view wx:for="{{dish.ingredients}}" wx:key="id" class="ing-chip">
+            <view class="ing-dot"></view>
+            <text>{{item.nameZh}}</text>
+          </view>
+        </view>
+        <view wx:else class="tiny">这道菜暂未配置食材清单。</view>
+      </view>
+
+      <view wx:if="{{reviews.length}}" class="block">
+        <view class="block-head">
+          <text class="block-title">最近评价</text>
+          <text class="tiny">共 {{rating.count}} 条</text>
+        </view>
+        <view wx:for="{{reviews}}" wx:key="id" class="review-row">
+          <view class="between">
+            <view class="stars stars-sm">
+              <text
+                wx:for="{{stars}}"
+                wx:for-item="s"
+                wx:key="*this"
+                class="{{s <= item.rating ? 'on' : ''}}"
+              >★</text>
+            </view>
+            <text class="tiny">{{item.day}}</text>
+          </view>
+          <view wx:if="{{item.content}}" class="review-content">{{item.content}}</view>
+        </view>
+      </view>
+
+      <view class="serving">
+        <view class="serving-main">
+          <view class="serving-title">这一份，几个人吃？</view>
+          <view class="tiny">只记录份数，不涉及金额</view>
+        </view>
+        <view class="stepper">
+          <view class="step-btn {{qty <= 1 ? 'disabled' : ''}}" bindtap="minus">−</view>
+          <view class="step-q">{{qty}}</view>
+          <view class="step-btn" bindtap="plus">+</view>
+        </view>
+      </view>
+
+      <view class="note-line">
+        <view class="note-dot">i</view>
+        <text>食材与口味如需调整，可在下单时写备注；商家会按备注制作。</text>
+      </view>
+    </view>
+  </block>
+</view>
+
+<view class="bottom-bar" wx:if="{{!loading && !error && dish}}">
+  <button class="brand-btn" bindtap="addToCart" disabled="{{!dish.isAvailable}}">{{actionText}}</button>
+</view>

@@ -1,0 +1,47 @@
+<view class="ingredients-page">
+  <view class="ing-head">
+    <view class="ih-main">
+      <view class="ih-title">食材库</view>
+      <view class="ih-sub">共 {{total}} 种 · 启用 {{activeCount}} 种</view>
+    </view>
+    <view class="mini-btn primary add-btn" bindtap="addIngredient">{{creating ? '创建中…' : '＋ 新增食材'}}</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-line">正在取食材…</view>
+
+  <view wx:elif="{{error}}" class="state-block">
+    <view class="state-mark">!</view>
+    <view class="state-title">食材没有加载出来</view>
+    <view class="state-desc">{{error}}</view>
+    <view class="state-action" bindtap="retry">重新加载</view>
+  </view>
+
+  <view wx:elif="{{!ingredients.length}}" class="state-block">
+    <view class="state-mark">材</view>
+    <view class="state-title">食材库还是空的</view>
+    <view class="state-desc">先把常用食材建起来，编辑菜品时就能勾选配方。</view>
+    <view class="state-action" bindtap="addIngredient">新增第一种食材</view>
+  </view>
+
+  <block wx:else>
+    <view wx:for="{{ingredients}}" wx:key="id" class="ing-item {{item.isActive ? '' : 'off'}}">
+      <view class="ing-icon">{{item.glyph}}</view>
+      <view class="ing-main">
+        <view class="ing-name">{{item.nameZh}}</view>
+        <view class="tiny">食材 #{{item.id}} · {{item.isActive ? '已启用' : '已停用'}}</view>
+      </view>
+      <view class="ing-actions">
+        <view class="mini-btn" bindtap="renameIngredient" data-id="{{item.id}}">改名</view>
+        <view
+          class="switch {{item.isActive ? 'on' : ''}} {{busyId === item.id ? 'disabled' : ''}}"
+          bindtap="toggleIngredient"
+          data-id="{{item.id}}"
+        ></view>
+      </view>
+    </view>
+
+    <view class="ing-note">
+      停用只影响后续编辑菜品时的可选范围，历史订单与采购快照不受影响；已停用的食材仍会显示在已配置它的菜品里。
+    </view>
+  </block>
+</view>

@@ -1,0 +1,90 @@
+<view class="cal-page page-with-tab">
+  <view class="cal-head">
+    <view>
+      <view class="t-page">日历</view>
+      <view class="tiny">按天回看这一餐吃了什么</view>
+    </view>
+    <view wx:if="{{!isCurrentMonth}}" class="today-btn" bindtap="goToday">回到本月</view>
+  </view>
+
+  <view class="cal-card card">
+    <view class="month-bar">
+      <view class="nav-btn" bindtap="prevMonth">
+        <view class="chevron left"></view>
+      </view>
+      <view class="month-title">{{monthTitle}}</view>
+      <view class="nav-btn" bindtap="nextMonth">
+        <view class="chevron right"></view>
+      </view>
+    </view>
+
+    <view class="week-row">
+      <text wx:for="{{weekdays}}" wx:key="*this">{{item}}</text>
+    </view>
+
+    <view class="grid">
+      <view
+        wx:for="{{cells}}"
+        wx:key="key"
+        class="cell {{item.dim ? 'dim' : ''}} {{item.selected ? 'selected' : ''}} {{item.today ? 'today' : ''}}"
+        bindtap="onDay"
+        data-key="{{item.key}}"
+        data-dim="{{item.dim}}"
+      >
+        <text class="day-num">{{item.day}}</text>
+        <view wx:if="{{item.count}}" class="dot-row">
+          <view class="meal-dot"></view>
+          <text class="dot-num">{{item.count}}</text>
+        </view>
+        <view wx:else class="dot-row placeholder"></view>
+      </view>
+    </view>
+
+    <view wx:if="{{monthTip}}" class="month-tip">{{monthTip}}</view>
+  </view>
+
+  <view class="day-head">
+    <view>
+      <view class="day-title">{{selectedTitle}}</view>
+      <view class="tiny">{{dayOrders.length ? '共 ' + dayOrders.length + ' 单' : '这一天没有订单'}}</view>
+    </view>
+    <view wx:if="{{loadingDay}}" class="tiny">加载中…</view>
+  </view>
+
+  <view wx:if="{{dayError}}" class="day-error">
+    <text>{{dayError}}</text>
+    <text class="retry-link" bindtap="retryDay">重试</text>
+  </view>
+
+  <view wx:elif="{{!loadingDay && !dayOrders.length}}" class="state-block day-empty">
+    <view class="state-mark">空</view>
+    <view class="state-title">这天没有吃饭记录</view>
+    <view class="state-desc">选一个带圆点的日期，看看那天点了什么。</view>
+  </view>
+
+  <view
+    wx:for="{{dayOrders}}"
+    wx:for-item="order"
+    wx:key="id"
+    class="meal-card card"
+    bindtap="goDetail"
+    data-id="{{order.id}}"
+  >
+    <view class="meal-art">
+      <dish-art image-key="{{order.imageKey}}" name="{{order.title}}" />
+    </view>
+    <view class="meal-main">
+      <view class="meal-title ellipsis">{{order.title}}</view>
+      <view class="meal-sub">{{order.sub}}</view>
+      <view class="meal-tags">
+        <text class="pill {{order.pillClass}}">{{order.statusText}}</text>
+        <text class="tiny">#{{order.id}}</text>
+      </view>
+    </view>
+    <view class="meal-arrow">
+      <view class="chevron right"></view>
+    </view>
+  </view>
+</view>
+
+<tab-bar role="customer" active="calendar" />

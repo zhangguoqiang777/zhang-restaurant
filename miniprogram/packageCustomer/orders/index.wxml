@@ -1,0 +1,85 @@
+<view class="orders-page page-with-tab">
+  <view class="page-head">
+    <view class="t-page">我的订单</view>
+    <view class="tiny">最近的下单排在最前 · 制作中会自动刷新</view>
+  </view>
+
+  <view class="seg">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="key"
+      class="seg-item {{status === item.key ? 'on' : ''}}"
+      bindtap="onTab"
+      data-key="{{item.key}}"
+    >{{item.label}}</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-line">正在取订单…</view>
+
+  <view wx:elif="{{error}}" class="state-block">
+    <view class="state-mark">!</view>
+    <view class="state-title">订单没有加载出来</view>
+    <view class="state-desc">{{error}}</view>
+    <view class="state-action" bindtap="retry">重新加载</view>
+  </view>
+
+  <view wx:elif="{{!orders.length}}" class="state-block">
+    <view class="state-mark">单</view>
+    <view class="state-title">{{status === 'all' ? '还没有点过餐' : '这个状态下没有订单'}}</view>
+    <view class="state-desc">去菜单看看今天有什么，点一份热乎的。</view>
+    <view class="state-action" bindtap="goMenu">去点餐</view>
+  </view>
+
+  <block wx:else>
+    <view
+      wx:for="{{orders}}"
+      wx:for-item="order"
+      wx:key="id"
+      class="order-card"
+      bindtap="goDetail"
+      data-id="{{order.id}}"
+    >
+      <view class="oc-top">
+        <text class="oc-no">#{{order.id}} · {{order.timeText}}</text>
+        <text class="pill {{order.pillClass}}">{{order.statusText}}</text>
+      </view>
+
+      <view class="oc-items">
+        <view class="thumb-row">
+          <view
+            wx:for="{{order.thumbs}}"
+            wx:for-item="thumb"
+            wx:key="dishId"
+            class="art-frame"
+          >
+            <dish-art image-key="{{thumb.imageKey}}" name="{{thumb.nameZh}}" />
+          </view>
+        </view>
+        <view class="oc-summary clamp-2">{{order.summary}}</view>
+      </view>
+
+      <view class="oc-foot">
+        <text class="oc-time">{{order.footText}}</text>
+        <view class="oc-actions">
+          <view
+            wx:if="{{order.canCancel}}"
+            class="mini-btn"
+            catchtap="cancelOrder"
+            data-id="{{order.id}}"
+            data-no="{{order.id}}"
+          >取消</view>
+          <view class="mini-btn" catchtap="goDetail" data-id="{{order.id}}">详情</view>
+          <view
+            wx:if="{{order.canReview}}"
+            class="mini-btn primary"
+            catchtap="goReview"
+            data-id="{{order.id}}"
+          >去评价</view>
+          <view wx:elif="{{order.status === 'completed'}}" class="mini-btn soft">已评价</view>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>
+
+<tab-bar role="customer" active="orders" />

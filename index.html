@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>小张的餐厅 · 架构与流程图册</title>
+<style>
+  :root{
+    --bg:#f3eee5;
+    --paper:#fffdf8;
+    --ink:#24211c;
+    --muted:#6f6559;
+    --line:#e1d5c6;
+    --accent:#c56a2b;
+    --accent-soft:#fbe9d7;
+    --green:#2f6f5e;
+    --green-soft:#e8f3ee;
+    --violet:#6b5b95;
+    --violet-soft:#f0ecf8;
+    --blue:#3d6288;
+    --blue-soft:#eaf1f8;
+    --red:#a4483c;
+    --red-soft:#f9e9e6;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:
+      radial-gradient(circle at 12% 2%, rgba(197,106,43,.10), transparent 32%),
+      radial-gradient(circle at 92% 18%, rgba(47,111,94,.09), transparent 30%),
+      linear-gradient(180deg,#f7f2ea 0%,var(--bg) 38%,#efe8dd 100%);
+    background-attachment:fixed;
+    line-height:1.6;
+  }
+  a{color:inherit;text-decoration:none}
+  .shell{width:min(1320px,94vw);margin:0 auto}
+  header{padding:64px 0 34px}
+  .eyebrow{display:flex;align-items:center;gap:10px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+  .eyebrow::before{content:"";width:34px;height:2px;background:var(--accent);display:block}
+  h1{font-size:clamp(30px,4.4vw,52px);line-height:1.12;margin:14px 0 12px;letter-spacing:-.03em;font-weight:800}
+  h1 span{color:var(--accent)}
+  .lead{max-width:800px;color:var(--muted);font-size:15px;margin:0}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .chip{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,253,248,.7);font-size:12px;color:var(--muted)}
+  .chip b{color:var(--ink);font-weight:650}
+  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+  nav{
+    position:sticky;top:0;z-index:20;margin-top:18px;
+    background:rgba(247,242,234,.82);backdrop-filter:blur(12px);
+    border-top:1px solid rgba(225,213,198,.65);border-bottom:1px solid rgba(225,213,198,.65);
+  }
+  nav .shell{display:flex;gap:6px;overflow-x:auto;padding:10px 0;scrollbar-width:thin}
+  nav a{white-space:nowrap;font-size:13px;color:var(--muted);padding:7px 12px;border-radius:9px;transition:.2s}
+  nav a:hover{background:var(--accent-soft);color:var(--accent)}
+  main{padding:30px 0 72px}
+  .section{padding:34px 0 10px}
+  .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:18px}
+  .num{font-size:12px;letter-spacing:.14em;color:var(--accent);font-weight:800}
+  h2{font-size:clamp(22px,2.7vw,32px);line-height:1.2;margin:6px 0 0;letter-spacing:-.02em}
+  .section-head p{max-width:620px;margin:0;color:var(--muted);font-size:13.5px}
+  .panel{
+    background:var(--paper);border:1px solid var(--line);border-radius:20px;
+    box-shadow:0 18px 50px rgba(59,45,29,.06);
+    padding:22px;margin-bottom:20px;
+  }
+  .panel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:14px}
+  .panel-title{font-size:16px;font-weight:750}
+  .panel-note{font-size:12px;color:var(--muted)}
+  .figure{overflow-x:auto;border-radius:14px;background:#fbf8f2;border:1px solid #eee4d6;padding:10px}
+  .figure svg{display:block;width:100%;height:auto;min-width:880px}
+  .caption{margin-top:10px;font-size:12px;color:var(--muted)}
+  .legend{display:flex;flex-wrap:wrap;gap:12px 20px;margin-top:12px;font-size:12px;color:var(--muted)}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:4px;margin-right:6px;vertical-align:-1px;border:1px solid rgba(0,0,0,.08)}
+  .callout{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+  .callout div{background:#faf6ef;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:12.5px;color:var(--muted)}
+  .callout b{display:block;color:var(--ink);font-size:13px;margin-bottom:4px}
+  .flow-grid{display:grid;gap:20px}
+  .reserved{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .res-card{border-radius:18px;padding:24px;border:1px solid var(--line);background:var(--paper)}
+  .res-card h3{margin:0 0 8px;font-size:19px}
+  .res-card p{margin:0 0 14px;color:var(--muted);font-size:13.5px}
+  .res-card ul{margin:0;padding-left:18px;font-size:13px;color:var(--muted)}
+  .res-card ul li{margin:6px 0}
+  .res-card ul b{color:var(--ink)}
+  .tag{display:inline-block;padding:4px 9px;border-radius:7px;font-size:11px;font-weight:700;letter-spacing:.03em;margin-bottom:12px}
+  .tag-off{background:var(--red-soft);color:var(--red)}
+  .tag-on{background:var(--green-soft);color:var(--green)}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em;background:#f6efe5;border:1px solid #e7dacb;border-radius:4px;padding:1px 5px;color:#5b4c3c}
+  .notes{display:grid;grid-template-columns:1.2fr .8fr;gap:20px}
+  .notes .panel{margin:0}
+  .checklist{list-style:none;margin:0;padding:0;font-size:13px;color:var(--muted)}
+  .checklist li{padding:8px 0;border-bottom:1px dashed var(--line);display:flex;gap:9px}
+  .checklist li:last-child{border-bottom:0}
+  .checklist span{color:var(--accent);font-weight:800}
+  footer{border-top:1px solid var(--line);padding:28px 0 44px;color:var(--muted);font-size:12px}
+  footer .shell{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+  .doc-link{font-weight:650;color:var(--accent);border-bottom:1px solid rgba(197,106,43,.3)}
+
+  /* SVG 通用样式 */
+  svg text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+  .arch-title{font-size:13px;font-weight:750;fill:#24211c}
+  .arch-sub{font-size:11px;fill:#6f6559}
+  .arch-label{font-size:10.5px;fill:#8a7b6a}
+  .arch-outer{fill:#f8f1e6;stroke:#ddc9ae;stroke-width:1.2}
+  .arch-card{fill:#fffaf3;stroke:#e8d4bc;stroke-width:1}
+  .arch-customer{fill:#fff2e2;stroke:#e8b57c}
+  .arch-merchant{fill:#eaf5ef;stroke:#9ec9b8}
+  .arch-admin{fill:#f1edf8;stroke:#c3b6df}
+  .arch-edge{fill:#eaf1f8;stroke:#b7cbe0}
+  .arch-api{fill:#f9f6f0;stroke:#d8cbb9}
+  .arch-auth{fill:#fbe9d7;stroke:#dba16a}
+  .arch-route{fill:#fffdf8;stroke:#decfbc}
+  .arch-module{fill:#eef5f1;stroke:#b3cfc3}
+  .arch-db{fill:#e6f1eb;stroke:#9bc3b1}
+  .arch-fs{fill:#f3eee7;stroke:#d4c3ae}
+  .arch-line{stroke:#8c7a66;stroke-width:1.4;fill:none}
+  .arch-dash{stroke:#8c7a66;stroke-width:1.2;fill:none;stroke-dasharray:6 5}
+
+  .er-box{fill:#fffdf8;stroke:#d9cbb9;stroke-width:1.1}
+  .er-user{fill:#fff3e3;stroke:#e5b17a}
+  .er-menu{fill:#eef7f1;stroke:#a9cdbd}
+  .er-order{fill:#eaf1f9;stroke:#aec4dc}
+  .er-review{fill:#f3eef9;stroke:#c3b4dd}
+  .ent-name{font-size:12px;font-weight:750;fill:#24211c}
+  .ent-cn{font-size:10px;fill:#8a7b6a}
+  .er-divider{stroke:#e7dccd;stroke-width:1}
+  .er-field{font-size:10.5px;fill:#4b4339}
+  .er-key-pk{font-size:9px;font-weight:800;fill:#b85f22}
+  .er-key-fk{font-size:9px;font-weight:800;fill:#3d6288}
+  .er-key-uq{font-size:9px;font-weight:800;fill:#2f6f5e}
+  .er-rel{font-size:9.5px;fill:#6f6559}
+  .er-line{stroke:#b8a891;stroke-width:1.1;fill:none}
+  .er-line-strong{stroke:#8d7b64;stroke-width:1.4;fill:none}
+
+  .flow-box{fill:#fffdf8;stroke:#d8c9b6;stroke-width:1}
+  .flow-box-1{fill:#fff3e4;stroke:#e4b27d}
+  .flow-box-2{fill:#eaf4ef;stroke:#a6ccbc}
+  .flow-box-3{fill:#eaf1f9;stroke:#aec4dd}
+  .flow-box-4{fill:#f3eef9;stroke:#c5b7df}
+  .flow-box-5{fill:#f7efe7;stroke:#d1bfa9}
+  .flow-box-6{fill:#fbeeea;stroke:#d9a89f}
+  .step-dot{fill:#c56a2b}
+  .step-num{font-size:10px;font-weight:800;fill:#fff}
+  .flow-title{font-size:12px;font-weight:750;fill:#24211c}
+  .flow-sub{font-size:10.3px;fill:#6f6559}
+  .flow-line{stroke:#a3927d;stroke-width:1.3;fill:none}
+  .flow-note{font-size:10px;fill:#8a7b6a}
+  .flow-chip{font-size:9.5px;font-weight:700}
+  .flow-chip-bg{fill:#fbeeea;stroke:#d9a89f}
+
+  @media (max-width:900px){
+    .callout,.reserved,.notes{grid-template-columns:1fr}
+    .section-head{display:block}
+    .section-head p{margin-top:8px}
+    header{padding-top:42px}
+    .figure svg{min-width:940px}
+  }
+</style>
+</head>
+<body>
+
+<header class="shell">
+  <div class="eyebrow">Zhang's Restaurant · System Design</div>
+  <h1>小张的餐厅 <span>架构与流程图册</span></h1>
+  <p class="lead">基于 <b>docs/方案设计.md v0.3</b> 的精简方案：单店、三视角、三状态订单、SQLite 单文件、本地图片存储。本页为静态单文件，不依赖任何外网 CDN，断网可直接打开。</p>
+  <div class="meta">
+    <span class="chip"><i class="dot"></i><b>8 张图</b> 架构 / ER / 6 条流程</span>
+    <span class="chip"><b>10 张表</b> 字段级定义见配套文档</span>
+    <span class="chip"><b>3 种视角</b> 客户 / 商家 / 超级用户</span>
+    <span class="chip"><b>本期不实现</b> AI 推荐 / 中英文切换</span>
+  </div>
+</header>
+
+<nav>
+  <div class="shell">
+    <a href="#architecture">01 总体架构</a>
+    <a href="#er">02 数据 ER</a>
+    <a href="#flows">03 关键流程</a>
+    <a href="#order">客户下单</a>
+    <a href="#advance">商家推进</a>
+    <a href="#purchase">采购清单</a>
+    <a href="#review">客户评价</a>
+    <a href="#grant">超管授权</a>
+    <a href="#cancel">软删除取消</a>
+    <a href="#reserved">04 预留设计</a>
+    <a href="#notes">05 对齐说明</a>
+  </div>
+</nav>
+
+<main class="shell">
+
+  <!-- 01 架构 -->
+  <section class="section" id="architecture">
+    <div class="section-head">
+      <div>
+        <div class="num">01 / ARCHITECTURE</div>
+        <h2>总体架构</h2>
+      </div>
+      <p>小程序只发 HTTPS 请求；Caddy 负责 TLS、反向代理与图片静态读取；Fastify 单进程鉴权并调用业务模块；SQLite 与图片目录同机持久化。</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">请求走向与分层</div>
+        <div class="panel-note">单进程 + WAL · 不使用 WebSocket</div>
+      </div>
+      <div class="figure">
+        <svg viewBox="0 0 1200 800" role="img" aria-labelledby="archTitle">
+          <title id="archTitle">小张的餐厅总体架构图</title>
+          <defs>
+            <marker id="arrowArch" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#8c7a66"/>
+            </marker>
+          </defs>
+
+          <!-- 小程序 -->
+          <rect class="arch-outer" x="30" y="30" width="1140" height="160" rx="18"/>
+          <text class="arch-title" x="50" y="58">微信小程序（原生 TypeScript）</text>
+          <text class="arch-label" x="1120" y="58" text-anchor="end">三种视角共用同一账号体系，切换视角不换用户</text>
+
+          <rect class="arch-card arch-customer" x="55" y="78" width="340" height="88" rx="12"/>
+          <text class="arch-title" x="73" y="103">客户视角</text>
+          <text class="arch-sub" x="73" y="125">菜单 / 购物车 / 我的订单 / 日历</text>
+          <text class="arch-sub" x="73" y="145">只看本人订单 · 可取消待处理 · 可评价</text>
+
+          <rect class="arch-card arch-merchant" x="425" y="78" width="340" height="88" rx="12"/>
+          <text class="arch-title" x="443" y="103">商家视角</text>
+          <text class="arch-sub" x="443" y="125">订单看板 / 采购清单 / 菜品 / 食材</text>
+          <text class="arch-sub" x="443" y="145">看全部订单 · 推进制作 · 维护菜单</text>
+
+          <rect class="arch-card arch-admin" x="795" y="78" width="350" height="88" rx="12"/>
+          <text class="arch-title" x="813" y="103">超级用户视角</text>
+          <text class="arch-sub" x="813" y="125">用户授权 / 订单 / 采购 / 菜品</text>
+          <text class="arch-sub" x="813" y="145">授权商家端 · 隐含商家权限</text>
+
+          <!-- Caddy -->
+          <rect class="arch-edge" x="455" y="230" width="290" height="60" rx="12"/>
+          <text class="arch-title" x="600" y="255" text-anchor="middle">Caddy</text>
+          <text class="arch-sub" x="600" y="276" text-anchor="middle">HTTPS 终止 / 反向代理 / 静态图片</text>
+          <line class="arch-line" x1="600" y1="190" x2="600" y2="226" marker-end="url(#arrowArch)"/>
+          <text class="arch-label" x="612" y="212">HTTPS JSON</text>
+
+          <!-- API -->
+          <rect class="arch-api" x="40" y="315" width="1120" height="290" rx="18"/>
+          <text class="arch-title" x="62" y="344">Fastify API（单进程）</text>
+          <text class="arch-label" x="1138" y="344" text-anchor="end">角色不写进 JWT，每次请求现查 SQLite</text>
+
+          <rect class="arch-auth" x="65" y="355" width="1070" height="48" rx="10"/>
+          <text class="arch-title" x="82" y="384">JWT 鉴权 + 角色校验</text>
+          <text class="arch-sub" x="360" y="384">从 token 取 uid</text>
+          <text class="arch-sub" x="620" y="384">商家接口校验 can_merchant 或 is_super</text>
+          <text class="arch-sub" x="990" y="384">撤销权限立即生效</text>
+
+          <line class="arch-line" x1="600" y1="290" x2="600" y2="352" marker-end="url(#arrowArch)"/>
+          <text class="arch-label" x="612" y="322">反向代理</text>
+
+          <!-- 路由 -->
+          <rect class="arch-route" x="65" y="435" width="330" height="74" rx="10"/>
+          <text class="arch-title" x="82" y="459">公共与客户路由</text>
+          <text class="arch-sub" x="82" y="480">auth / me / categories / dishes</text>
+          <text class="arch-sub" x="82" y="499">orders / calendar / reviews</text>
+
+          <rect class="arch-route" x="415" y="435" width="330" height="74" rx="10"/>
+          <text class="arch-title" x="432" y="459">商家路由</text>
+          <text class="arch-sub" x="432" y="480">merchant/orders / purchases</text>
+          <text class="arch-sub" x="432" y="499">dishes / categories / ingredients</text>
+
+          <rect class="arch-route" x="765" y="435" width="370" height="74" rx="10"/>
+          <text class="arch-title" x="782" y="459">超级用户路由</text>
+          <text class="arch-sub" x="782" y="480">admin/users</text>
+          <text class="arch-sub" x="782" y="499">授权 / 撤销商家端访问</text>
+
+          <line class="arch-line" x1="230" y1="403" x2="230" y2="432" marker-end="url(#arrowArch)"/>
+          <line class="arch-line" x1="580" y1="403" x2="580" y2="432" marker-end="url(#arrowArch)"/>
+          <line class="arch-line" x1="950" y1="403" x2="950" y2="432" marker-end="url(#arrowArch)"/>
+
+          <!-- 模块 -->
+          <rect class="arch-module" x="65" y="530" width="190" height="60" rx="9"/>
+          <text class="arch-title" x="160" y="553" text-anchor="middle">菜单 / 图片</text>
+          <text class="arch-sub" x="160" y="574" text-anchor="middle">分类 / 菜品 / 上传</text>
+
+          <rect class="arch-module" x="275" y="530" width="190" height="60" rx="9"/>
+          <text class="arch-title" x="370" y="553" text-anchor="middle">订单 / 状态</text>
+          <text class="arch-sub" x="370" y="574" text-anchor="middle">三状态 / 软删除</text>
+
+          <rect class="arch-module" x="485" y="530" width="190" height="60" rx="9"/>
+          <text class="arch-title" x="580" y="553" text-anchor="middle">采购快照</text>
+          <text class="arch-sub" x="580" y="574" text-anchor="middle">下单生成 / 按日聚合</text>
+
+          <rect class="arch-module" x="695" y="530" width="190" height="60" rx="9"/>
+          <text class="arch-title" x="790" y="553" text-anchor="middle">评价 / 日历</text>
+          <text class="arch-sub" x="790" y="574" text-anchor="middle">一单一评 / business_date</text>
+
+          <rect class="arch-module" x="905" y="530" width="190" height="60" rx="9"/>
+          <text class="arch-title" x="1000" y="553" text-anchor="middle">权限授权</text>
+          <text class="arch-sub" x="1000" y="574" text-anchor="middle">can_merchant / is_super</text>
+
+          <line class="arch-line" x1="600" y1="509" x2="600" y2="527" marker-end="url(#arrowArch)"/>
+          <text class="arch-label" x="612" y="518">调用业务模块</text>
+
+          <!-- 数据 -->
+          <line class="arch-line" x1="600" y1="590" x2="600" y2="620"/>
+          <line class="arch-line" x1="370" y1="620" x2="865" y2="620"/>
+          <line class="arch-line" x1="370" y1="620" x2="370" y2="657" marker-end="url(#arrowArch)"/>
+          <line class="arch-line" x1="865" y1="620" x2="865" y2="657" marker-end="url(#arrowArch)"/>
+          <text class="arch-label" x="382" y="640">SQL 读写</text>
+          <text class="arch-label" x="877" y="640">图片上传 / 读取</text>
+
+          <rect class="arch-db" x="205" y="660" width="330" height="75" rx="12"/>
+          <text class="arch-title" x="370" y="687" text-anchor="middle">SQLite（WAL）</text>
+          <text class="arch-sub" x="370" y="708" text-anchor="middle">/data/restaurant.db · 10 张表</text>
+          <text class="arch-sub" x="370" y="725" text-anchor="middle">单进程单实例写</text>
+
+          <rect class="arch-fs" x="700" y="660" width="330" height="75" rx="12"/>
+          <text class="arch-title" x="865" y="687" text-anchor="middle">图片目录</text>
+          <text class="arch-sub" x="865" y="708" text-anchor="middle">/data/uploads/yyyy/mm/</text>
+          <text class="arch-sub" x="865" y="725" text-anchor="middle">数据库只存 image_key</text>
+
+          <path class="arch-dash" d="M745,260 L1178,260 L1178,700 L1034,700" marker-end="url(#arrowArch)"/>
+          <text class="arch-label" x="1170" y="520" text-anchor="end" transform="rotate(90 1170 520)">/uploads 静态读取</text>
+        </svg>
+      </div>
+      <div class="callout">
+        <div><b>请求边界</b>小程序不直连数据库、不持有存储密钥；鉴权、角色校验与状态迁移都不在客户端。</div>
+        <div><b>订单隔离</b>客户接口强制按 JWT 的 uid 过滤；商家接口不按用户过滤，返回全部订单。</div>
+        <div><b>数据与文件</b>SQLite 和图片都放本机持久目录；不做多实例，不做自动备份体系。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 ER -->
+  <section class="section" id="er">
+    <div class="section-head">
+      <div>
+        <div class="num">02 / DATA MODEL</div>
+        <h2>数据 ER 图</h2>
+      </div>
+      <p>10 张表覆盖用户、菜单、食材、订单、采购快照、评价。主外键与一对一/一对多关系在图上直接标注，字段级定义见配套文档。</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">核心关系</div>
+        <div class="panel-note">PK 主键 · FK 外键 · UQ 唯一 · * 预留 i18n</div>
+      </div>
+      <div class="figure">
+        <svg viewBox="0 0 1240 880" role="img" aria-labelledby="erTitle">
+          <title id="erTitle">小张的餐厅数据 ER 图</title>
+          <defs>
+            <marker id="arrowER" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#8d7b64"/>
+            </marker>
+          </defs>
+
+          <!-- app_user -->
+          <g>
+            <rect class="er-box er-user" x="620" y="30" width="250" height="155" rx="12"/>
+            <text class="ent-name" x="636" y="54">app_user</text>
+            <text class="ent-cn" x="636" y="69">登录用户 / 权限</text>
+            <line class="er-divider" x1="632" y1="78" x2="858" y2="78"/>
+            <text class="er-key-pk" x="636" y="96">PK</text><text class="er-field" x="662" y="96">id</text>
+            <text class="er-key-uq" x="636" y="115">UQ</text><text class="er-field" x="662" y="115">openid</text>
+            <text class="er-key-pk" x="636" y="134"> </text><text class="er-field" x="662" y="134">is_super / can_merchant</text>
+            <text class="er-field" x="636" y="153">merchant_granted_by · last_role</text>
+            <text class="er-field" x="636" y="172">locale *</text>
+          </g>
+
+          <!-- dish_category -->
+          <g>
+            <rect class="er-box er-menu" x="40" y="40" width="220" height="140" rx="12"/>
+            <text class="ent-name" x="56" y="64">dish_category</text>
+            <text class="ent-cn" x="56" y="79">菜品分类</text>
+            <line class="er-divider" x1="52" y1="88" x2="248" y2="88"/>
+            <text class="er-key-pk" x="56" y="106">PK</text><text class="er-field" x="82" y="106">id</text>
+            <text class="er-field" x="56" y="125">name_zh / name_en *</text>
+            <text class="er-field" x="56" y="144">sort_order</text>
+            <text class="er-field" x="56" y="163">is_active</text>
+          </g>
+
+          <!-- dish -->
+          <g>
+            <rect class="er-box er-menu" x="40" y="250" width="230" height="155" rx="12"/>
+            <text class="ent-name" x="56" y="274">dish</text>
+            <text class="ent-cn" x="56" y="289">菜品（无价格）</text>
+            <line class="er-divider" x1="52" y1="298" x2="258" y2="298"/>
+            <text class="er-key-pk" x="56" y="316">PK</text><text class="er-field" x="82" y="316">id</text>
+            <text class="er-key-fk" x="56" y="335">FK</text><text class="er-field" x="82" y="335">category_id</text>
+            <text class="er-field" x="56" y="354">name_zh / name_en *</text>
+            <text class="er-field" x="56" y="373">image_key</text>
+            <text class="er-field" x="56" y="392">is_available / sort_order</text>
+          </g>
+
+          <!-- ingredient -->
+          <g>
+            <rect class="er-box er-menu" x="40" y="700" width="220" height="140" rx="12"/>
+            <text class="ent-name" x="56" y="724">ingredient</text>
+            <text class="ent-cn" x="56" y="739">食材库（无单位）</text>
+            <line class="er-divider" x1="52" y1="748" x2="248" y2="748"/>
+            <text class="er-key-pk" x="56" y="766">PK</text><text class="er-field" x="82" y="766">id</text>
+            <text class="er-field" x="56" y="785">name_zh / name_en *</text>
+            <text class="er-field" x="56" y="804">is_active</text>
+          </g>
+
+          <!-- dish_ingredient -->
+          <g>
+            <rect class="er-box er-menu" x="40" y="490" width="240" height="105" rx="12"/>
+            <text class="ent-name" x="56" y="514">dish_ingredient</text>
+            <text class="ent-cn" x="56" y="529">菜品食材清单</text>
+            <line class="er-divider" x1="52" y1="538" x2="268" y2="538"/>
+            <text class="er-key-pk" x="56" y="556">PK</text><text class="er-key-fk" x="82" y="556">FK</text><text class="er-field" x="108" y="556">dish_id</text>
+            <text class="er-key-pk" x="56" y="578">PK</text><text class="er-key-fk" x="82" y="578">FK</text><text class="er-field" x="108" y="578">ingredient_id</text>
+          </g>
+
+          <!-- orders -->
+          <g>
+            <rect class="er-box er-order" x="580" y="210" width="260" height="170" rx="12"/>
+            <text class="ent-name" x="596" y="234">orders</text>
+            <text class="ent-cn" x="596" y="249">订单（三状态 + 软删除）</text>
+            <line class="er-divider" x1="592" y1="258" x2="832" y2="258"/>
+            <text class="er-key-pk" x="596" y="276">PK</text><text class="er-field" x="622" y="276">id</text>
+            <text class="er-key-fk" x="596" y="295">FK</text><text class="er-field" x="622" y="295">customer_id</text>
+            <text class="er-field" x="596" y="314">status · business_date</text>
+            <text class="er-field" x="596" y="333">remark · created_at</text>
+            <text class="er-field" x="596" y="352">deleted_at · deleted_by_user_id</text>
+            <text class="er-field" x="596" y="371">cooking_at / completed_at</text>
+          </g>
+
+          <!-- order_item -->
+          <g>
+            <rect class="er-box er-order" x="600" y="470" width="240" height="155" rx="12"/>
+            <text class="ent-name" x="616" y="494">order_item</text>
+            <text class="ent-cn" x="616" y="509">订单明细（菜名快照）</text>
+            <line class="er-divider" x1="612" y1="518" x2="832" y2="518"/>
+            <text class="er-key-pk" x="616" y="536">PK</text><text class="er-field" x="642" y="536">id</text>
+            <text class="er-key-fk" x="616" y="555">FK</text><text class="er-field" x="642" y="555">order_id</text>
+            <text class="er-key-fk" x="616" y="574">FK</text><text class="er-field" x="642" y="574">dish_id</text>
+            <text class="er-field" x="616" y="593">name_zh / name_en *</text>
+            <text class="er-field" x="616" y="612">qty</text>
+          </g>
+
+          <!-- order_ingredient -->
+          <g>
+            <rect class="er-box er-order" x="600" y="690" width="250" height="155" rx="12"/>
+            <text class="ent-name" x="616" y="714">order_ingredient</text>
+            <text class="ent-cn" x="616" y="729">采购快照（每单每食材一行）</text>
+            <line class="er-divider" x1="612" y1="738" x2="842" y2="738"/>
+            <text class="er-key-pk" x="616" y="756">PK</text><text class="er-field" x="642" y="756">id</text>
+            <text class="er-key-fk" x="616" y="775">FK</text><text class="er-field" x="642" y="775">order_id</text>
+            <text class="er-key-fk" x="616" y="794">FK</text><text class="er-field" x="642" y="794">ingredient_id</text>
+            <text class="er-key-uq" x="616" y="813">UQ</text><text class="er-field" x="642" y="813">(order_id, ingredient_id)</text>
+          </g>
+
+          <!-- review -->
+          <g>
+            <rect class="er-box er-review" x="980" y="210" width="210" height="150" rx="12"/>
+            <text class="ent-name" x="996" y="234">review</text>
+            <text class="ent-cn" x="996" y="249">整单评价</text>
+            <line class="er-divider" x1="992" y1="258" x2="1182" y2="258"/>
+            <text class="er-key-pk" x="996" y="276">PK</text><text class="er-field" x="1022" y="276">id</text>
+            <text class="er-key-uq" x="996" y="295">UQ</text><text class="er-field" x="1022" y="295">order_id</text>
+            <text class="er-key-fk" x="996" y="314">FK</text><text class="er-field" x="1022" y="314">customer_id</text>
+            <text class="er-field" x="996" y="333">rating / content / is_hidden</text>
+          </g>
+
+          <!-- review_item -->
+          <g>
+            <rect class="er-box er-review" x="980" y="470" width="230" height="150" rx="12"/>
+            <text class="ent-name" x="996" y="494">review_item</text>
+            <text class="ent-cn" x="996" y="509">菜品评分与短评</text>
+            <line class="er-divider" x1="992" y1="518" x2="1202" y2="518"/>
+            <text class="er-key-pk" x="996" y="536">PK</text><text class="er-field" x="1022" y="536">id</text>
+            <text class="er-key-fk" x="996" y="555">FK</text><text class="er-field" x="1022" y="555">review_id</text>
+            <text class="er-key-fk" x="996" y="574">FK</text><text class="er-field" x="1022" y="574">dish_id</text>
+            <text class="er-field" x="996" y="593">rating / content</text>
+          </g>
+
+          <!-- 关系线 -->
+          <line class="er-line-strong" x1="150" y1="180" x2="150" y2="246" marker-end="url(#arrowER)"/>
+          <text class="er-rel" x="160" y="218">1:N</text>
+
+          <line class="er-line" x1="150" y1="405" x2="150" y2="486" marker-end="url(#arrowER)"/>
+          <text class="er-rel" x="160" y="448">1:N</text>
+
+          <line class="er-line" x1="150" y1="700" x2="150" y2="599" marker-end="url(#arrowER)"/>
+          <text class="er-rel" x="160" y="652">1:N</text>
+
+          <line class="er-line-strong" x1="730" y1="185" x2="730" y2="206" marker-end="url(#arrowER)"/>
+          <text class="er-rel" x="742" y="200">1:N</text>
+
+          <line class="er-line-strong" x1="710" y1="380" x2="710" y2="466" marker-end="url(#arrowER)"/>
+          <text class="er-rel" x="722" y="428">1:N</text>
+
+          <line class="er-line-strong" x1="600" y1="520" x2="274" y2="332" marker-end="url(#arrowER)"/>
+          <text class="er-rel" x="432" y="438">N:1 · dish_id</text>
+
+          <path class="er-line-strong" d="M580,360 L560,360 L560,650 L590,650 L590,760 L596,760" marker-end="url(#arrowER)"/>
+          <text class="er-rel" x="512" y="620">1:N</text>
+
+          <line class="er-line-strong" x1="840" y1="295" x2="976" y2="295" marker-end="url(#arrowER)"/>
+          <text class="er-rel" x="888" y="285">1:0/1</text>
+
+          <line class="er-line" x1="1085" y1="360" x2="1085" y2="466" marker-end="url(#arrowER)"/>
+          <text class="er-rel" x="1097" y="418">1:N</text>
+
+          <path class="er-line" d="M870,105 L1140,105 L1140,206" marker-end="url(#arrowER)"/>
+          <text class="er-rel" x="958" y="96">1:N · customer_id</text>
+
+          <line class="er-line-strong" x1="260" y1="765" x2="596" y2="765" marker-end="url(#arrowER)"/>
+          <text class="er-rel" x="380" y="755">1:N</text>
+
+          <path class="er-line" d="M270,250 L270,200 L950,200 L950,540 L976,540" marker-end="url(#arrowER)"/>
+          <text class="er-rel" x="610" y="192">1:N · dish_id</text>
+
+          <path class="er-line" d="M620,60 L585,60 L585,18 L660,18 L660,26" marker-end="url(#arrowER)"/>
+          <text class="er-rel" x="592" y="12">0..1 授权人</text>
+        </svg>
+      </div>
+      <div class="legend">
+        <span><i style="background:#fff3e3;border-color:#e5b17a"></i>用户与权限</span>
+        <span><i style="background:#eef7f1;border-color:#a9cdbd"></i>菜单与食材</span>
+        <span><i style="background:#eaf1f9;border-color:#aec4dc"></i>订单与采购</span>
+        <span><i style="background:#f3eef9;border-color:#c3b4dd"></i>评价</span>
+        <span>PK 主键 · FK 外键 · UQ 唯一 · * 预留 i18n</span>
+      </div>
+      <div class="caption">关键落库：订单隔离走 <b>orders.customer_id</b>；商家授权走 <b>app_user.can_merchant</b> + <b>merchant_granted_by/at</b>；采购详情走 <b>order_ingredient</b> 快照。</div>
+    </div>
+  </section>
+
+  <!-- 03 流程 -->
+  <section class="section" id="flows">
+    <div class="section-head">
+      <div>
+        <div class="num">03 / EXECUTION FLOWS</div>
+        <h2>六条关键流程</h2>
+      </div>
+      <p>每条图只表达一条主路径；异常分支（权限不足、状态不允许、重复评价）在图中用红色标记。所有流程均与当前表结构一致。</p>
+    </div>
+
+    <div class="flow-grid">
+
+      <!-- 下单 -->
+      <div class="panel" id="order">
+        <div class="panel-head">
+          <div class="panel-title">01 · 客户点餐下单（含订单食材快照）</div>
+          <div class="panel-note">入口：菜单 → 购物车 → 提交</div>
+        </div>
+        <div class="figure">
+          <svg viewBox="0 0 1160 270" role="img" aria-labelledby="flowOrderTitle">
+            <title id="flowOrderTitle">客户点餐下单流程</title>
+            <defs>
+              <marker id="mF1" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,6 L9,3 z" fill="#a3927d"/>
+              </marker>
+            </defs>
+            <text class="flow-note" x="30" y="38">下单事务内完成：订单 + 明细快照 + 采购快照；不计算金额。</text>
+            <g>
+              <rect class="flow-box flow-box-1" x="30" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="52" cy="102" r="11"/><text class="step-num" x="52" y="106" text-anchor="middle">1</text>
+              <text class="flow-title" x="42" y="138">客户选菜</text><text class="flow-sub" x="42" y="160">数量 + 口味备注</text>
+            </g>
+            <line class="flow-line" x1="195" y1="130" x2="207" y2="130" marker-end="url(#mF1)"/>
+            <g>
+              <rect class="flow-box flow-box-2" x="210" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="232" cy="102" r="11"/><text class="step-num" x="232" y="106" text-anchor="middle">2</text>
+              <text class="flow-title" x="222" y="138">POST /orders</text><text class="flow-sub" x="222" y="160">JWT 取当前 uid</text>
+            </g>
+            <line class="flow-line" x1="375" y1="130" x2="387" y2="130" marker-end="url(#mF1)"/>
+            <g>
+              <rect class="flow-box flow-box-3" x="390" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="412" cy="102" r="11"/><text class="step-num" x="412" y="106" text-anchor="middle">3</text>
+              <text class="flow-title" x="402" y="138">校验与事务</text><text class="flow-sub" x="402" y="160">菜品上架 / BEGIN</text>
+            </g>
+            <line class="flow-line" x1="555" y1="130" x2="567" y2="130" marker-end="url(#mF1)"/>
+            <g>
+              <rect class="flow-box flow-box-3" x="570" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="592" cy="102" r="11"/><text class="step-num" x="592" y="106" text-anchor="middle">4</text>
+              <text class="flow-title" x="582" y="138">写订单与明细</text><text class="flow-sub" x="582" y="160">菜名快照 + qty</text>
+            </g>
+            <line class="flow-line" x1="735" y1="130" x2="747" y2="130" marker-end="url(#mF1)"/>
+            <g>
+              <rect class="flow-box flow-box-1" x="750" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="772" cy="102" r="11"/><text class="step-num" x="772" y="106" text-anchor="middle">5</text>
+              <text class="flow-title" x="762" y="138">展开食材清单</text><text class="flow-sub" x="762" y="160">按 ingredient 去重</text>
+            </g>
+            <line class="flow-line" x1="915" y1="130" x2="927" y2="130" marker-end="url(#mF1)"/>
+            <g>
+              <rect class="flow-box flow-box-2" x="930" y="80" width="170" height="100" rx="14"/>
+              <circle class="step-dot" cx="952" cy="102" r="11"/><text class="step-num" x="952" y="106" text-anchor="middle">6</text>
+              <text class="flow-title" x="942" y="138">写采购快照</text><text class="flow-sub" x="942" y="160">COMMIT → pending</text>
+            </g>
+            <text class="flow-note" x="30" y="222">结果：order_item 保存菜名快照；order_ingredient 每单每食材一行，后续采购只查快照。</text>
+          </svg>
+        </div>
+        <div class="caption">快照生成是下单事务的一部分；任一菜品已下架或事务失败，整单不落库。</div>
+      </div>
+
+      <!-- 商家推进 -->
+      <div class="panel" id="advance">
+        <div class="panel-head">
+          <div class="panel-title">02 · 商家推进订单：待处理 → 制作中 → 完成</div>
+          <div class="panel-note">入口：订单看板</div>
+        </div>
+        <div class="figure">
+          <svg viewBox="0 0 1160 270" role="img" aria-labelledby="flowAdvanceTitle">
+            <title id="flowAdvanceTitle">商家推进订单流程</title>
+            <defs>
+              <marker id="mF2" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,6 L9,3 z" fill="#a3927d"/>
+              </marker>
+            </defs>
+            <text class="flow-note" x="30" y="38">状态单向推进：pending → cooking → completed；不设回退。</text>
+            <g>
+              <rect class="flow-box flow-box-3" x="35" y="80" width="185" height="110" rx="14"/>
+              <circle class="step-dot" cx="57" cy="102" r="11"/><text class="step-num" x="57" y="106" text-anchor="middle">1</text>
+              <text class="flow-title" x="47" y="138">看板轮询</text><text class="flow-sub" x="47" y="160">30s / 下拉刷新</text>
+            </g>
+            <line class="flow-line" x1="220" y1="135" x2="232" y2="135" marker-end="url(#mF2)"/>
+            <g>
+              <rect class="flow-box flow-box-3" x="235" y="80" width="185" height="110" rx="14"/>
+              <circle class="step-dot" cx="257" cy="102" r="11"/><text class="step-num" x="257" y="106" text-anchor="middle">2</text>
+              <text class="flow-title" x="247" y="138">三列订单</text><text class="flow-sub" x="247" y="160">全部用户订单</text>
+              <text class="flow-sub" x="247" y="177">排除 deleted_at 非空</text>
+            </g>
+            <line class="flow-line" x1="420" y1="135" x2="432" y2="135" marker-end="url(#mF2)"/>
+            <g>
+              <rect class="flow-box flow-box-1" x="435" y="80" width="185" height="110" rx="14"/>
+              <circle class="step-dot" cx="457" cy="102" r="11"/><text class="step-num" x="457" y="106" text-anchor="middle">3</text>
+              <text class="flow-title" x="447" y="138">开始制作</text><text class="flow-sub" x="447" y="160">POST /start</text>
+              <text class="flow-sub" x="447" y="177">pending → cooking</text>
+            </g>
+            <line class="flow-line" x1="620" y1="135" x2="632" y2="135" marker-end="url(#mF2)"/>
+            <g>
+              <rect class="flow-box flow-box-2" x="635" y="80" width="185" height="110" rx="14"/>
+              <circle class="step-dot" cx="657" cy="102" r="11"/><text class="step-num" x="657" y="106" text-anchor="middle">4</text>
+              <text class="flow-title" x="647" y="138">点“完成”</text><text class="flow-sub" x="647" y="160">POST /complete</text>
+              <text class="flow-sub" x="647" y="177">cooking → completed</text>
+            </g>
+            <line class="flow-line" x1="820" y1="135" x2="832" y2="135" marker-end="url(#mF2)"/>
+            <g>
+              <rect class="flow-box flow-box-5" x="835" y="80" width="210" height="110" rx="14"/>
+              <circle class="step-dot" cx="857" cy="102" r="11"/><text class="step-num" x="857" y="106" text-anchor="middle">5</text>
+              <text class="flow-title" x="847" y="138">客户刷新查看</text><text class="flow-sub" x="847" y="160">onShow / 30s 轮询</text>
+              <text class="flow-sub" x="847" y="177">看到最新状态与时间</text>
+            </g>
+            <text class="flow-note" x="30" y="222">商家每请求都现查 can_merchant / is_super；被撤权后下一次请求直接 403。</text>
+            <text class="flow-chip" x="1046" y="112" fill="#a4483c">cooking / completed</text>
+            <text class="flow-chip" x="1046" y="128" fill="#a4483c">不可取消</text>
+          </svg>
+        </div>
+        <div class="caption">整单只有一个进度，没有逐菜状态；客户与商家看到的是同一条时间线。</div>
+      </div>
+
+      <!-- 采购 -->
+      <div class="panel" id="purchase">
+        <div class="panel-head">
+          <div class="panel-title">03 · 采购清单生成与查看</div>
+          <div class="panel-note">入口：商家 → 采购清单</div>
+        </div>
+        <div class="figure">
+          <svg viewBox="0 0 1160 270" role="img" aria-labelledby="flowPurchaseTitle">
+            <title id="flowPurchaseTitle">采购清单生成与查看流程</title>
+            <defs>
+              <marker id="mF3" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,6 L9,3 z" fill="#a3927d"/>
+              </marker>
+            </defs>
+            <text class="flow-note" x="30" y="38">采购详情 = 下单时的食材快照；不按当前配方重算，不做数量/单位换算。</text>
+            <g>
+              <rect class="flow-box flow-box-1" x="35" y="80" width="185" height="100" rx="14"/>
+              <circle class="step-dot" cx="57" cy="102" r="11"/><text class="step-num" x="57" y="106" text-anchor="middle">1</text>
+              <text class="flow-title" x="47" y="138">下单写快照</text><text class="flow-sub" x="47" y="160">order_ingredient</text>
+            </g>
+            <line class="flow-line" x1="220" y1="130" x2="232" y2="130" marker-end="url(#mF3)"/>
+            <g>
+              <rect class="flow-box flow-box-2" x="235" y="80" width="185" height="100" rx="14"/>
+              <circle class="step-dot" cx="257" cy="102" r="11"/><text class="step-num" x="257" y="106" text-anchor="middle">2</text>
+              <text class="flow-title" x="247" y="138">采购页选日期</text><text class="flow-sub" x="247" y="160">business_date</text>
+            </g>
+            <line class="flow-line" x1="420" y1="130" x2="432" y2="130" marker-end="url(#mF3)"/>
+            <g>
+              <rect class="flow-box flow-box-3" x="435" y="80" width="185" height="100" rx="14"/>
+              <circle class="step-dot" cx="457" cy="102" r="11"/><text class="step-num" x="457" y="106" text-anchor="middle">3</text>
+              <text class="flow-title" x="447" y="138">GET /purchases</text><text class="flow-sub" x="447" y="160">校验商家权限</text>
+            </g>
+            <line class="flow-line" x1="620" y1="130" x2="632" y2="130" marker-end="url(#mF3)"/>
+            <g>
+              <rect class="flow-box flow-box-5" x="635" y="80" width="185" height="100" rx="14"/>
+              <circle class="step-dot" cx="657" cy="102" r="11"/><text class="step-num" x="657" y="106" text-anchor="middle">4</text>
+              <text class="flow-title" x="647" y="138">过滤与去重</text><text class="flow-sub" x="647" y="160">排除软删 / 按食材</text>
+            </g>
+            <line class="flow-line" x1="820" y1="130" x2="832" y2="130" marker-end="url(#mF3)"/>
+            <g>
+              <rect class="flow-box flow-box-2" x="835" y="80" width="210" height="100" rx="14"/>
+              <circle class="step-dot" cx="857" cy="102" r="11"/><text class="step-num" x="857" y="106" text-anchor="middle">5</text>
+              <text class="flow-title" x="847" y="138">展示食材清单</text><text class="flow-sub" x="847" y="160">食材名 + 涉及订单数</text>
+              <text class="flow-sub" x="847" y="177">无数量 / 单位 / 库存</text>
+            </g>
+            <text class="flow-note" x="30" y="222">取消订单不删快照，聚合时按 orders.deleted_at IS NULL 排除。</text>
+          </svg>
+        </div>
+        <div class="caption">同一食材被多道菜、多个订单需要时，只显示一条食材记录并标注涉及订单数。</div>
+      </div>
+
+      <!-- 评价 -->
+      <div class="panel" id="review">
+        <div class="panel-head">
+          <div class="panel-title">04 · 客户评价：一单一评 + 菜品评分</div>
+          <div class="panel-note">入口：订单完成 → 去评价</div>
+        </div>
+        <div class="figure">
+          <svg viewBox="0 0 1160 270" role="img" aria-labelledby="flowReviewTitle">
+            <title id="flowReviewTitle">客户评价流程</title>
+            <defs>
+              <marker id="mF4" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,6 L9,3 z" fill="#a3927d"/>
+              </marker>
+            </defs>
+            <text class="flow-note" x="30" y="38">整单评分必填，菜品可单独评分与短评；仅 completed 订单可评。</text>
+            <g>
+              <rect class="flow-box flow-box-2" x="25" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="47" cy="102" r="11"/><text class="step-num" x="47" y="106" text-anchor="middle">1</text>
+              <text class="flow-title" x="37" y="138">完成订单</text><text class="flow-sub" x="37" y="160">status=completed</text>
+            </g>
+            <line class="flow-line" x1="190" y1="130" x2="202" y2="130" marker-end="url(#mF4)"/>
+            <g>
+              <rect class="flow-box flow-box-1" x="205" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="227" cy="102" r="11"/><text class="step-num" x="227" y="106" text-anchor="middle">2</text>
+              <text class="flow-title" x="217" y="138">去评价</text><text class="flow-sub" x="217" y="160">整单星 + 每菜星</text>
+            </g>
+            <line class="flow-line" x1="370" y1="130" x2="382" y2="130" marker-end="url(#mF4)"/>
+            <g>
+              <rect class="flow-box flow-box-3" x="385" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="407" cy="102" r="11"/><text class="step-num" x="407" y="106" text-anchor="middle">3</text>
+              <text class="flow-title" x="397" y="138">POST review</text><text class="flow-sub" x="397" y="160">校验归属与状态</text>
+            </g>
+            <line class="flow-line" x1="550" y1="130" x2="562" y2="130" marker-end="url(#mF4)"/>
+            <g>
+              <rect class="flow-box flow-box-4" x="565" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="587" cy="102" r="11"/><text class="step-num" x="587" y="106" text-anchor="middle">4</text>
+              <text class="flow-title" x="577" y="138">一单一评</text><text class="flow-sub" x="577" y="160">UNIQUE(order_id)</text>
+            </g>
+            <line class="flow-line" x1="730" y1="130" x2="742" y2="130" marker-end="url(#mF4)"/>
+            <g>
+              <rect class="flow-box flow-box-4" x="745" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="767" cy="102" r="11"/><text class="step-num" x="767" y="106" text-anchor="middle">5</text>
+              <text class="flow-title" x="757" y="138">写菜品评分</text><text class="flow-sub" x="757" y="160">review_item 每菜一行</text>
+            </g>
+            <line class="flow-line" x1="910" y1="130" x2="922" y2="130" marker-end="url(#mF4)"/>
+            <g>
+              <rect class="flow-box flow-box-2" x="925" y="80" width="175" height="100" rx="14"/>
+              <circle class="step-dot" cx="947" cy="102" r="11"/><text class="step-num" x="947" y="106" text-anchor="middle">6</text>
+              <text class="flow-title" x="937" y="138">均分展示</text><text class="flow-sub" x="937" y="160">未隐藏评价聚合</text>
+            </g>
+            <rect class="flow-chip-bg" x="548" y="202" width="206" height="26" rx="7"/>
+            <text class="flow-chip" x="560" y="219" fill="#a4483c">重复提交 → 409 REVIEW_DUPLICATED</text>
+          </svg>
+        </div>
+        <div class="caption">商家只能隐藏评价内容，不能修改星级；菜品详情展示均分与条数。</div>
+      </div>
+
+      <!-- 超管授权 -->
+      <div class="panel" id="grant">
+        <div class="panel-head">
+          <div class="panel-title">05 · 超级用户授权商家权限</div>
+          <div class="panel-note">入口：超级用户 → 用户授权</div>
+        </div>
+        <div class="figure">
+          <svg viewBox="0 0 1160 270" role="img" aria-labelledby="flowGrantTitle">
+            <title id="flowGrantTitle">超级用户授权商家权限流程</title>
+            <defs>
+              <marker id="mF5" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,6 L9,3 z" fill="#a3927d"/>
+              </marker>
+            </defs>
+            <text class="flow-note" x="30" y="38">授权对象从 app_user（所有登录过的用户）里选；不使用环境变量或 openid 白名单。</text>
+            <g>
+              <rect class="flow-box flow-box-5" x="25" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="47" cy="102" r="11"/><text class="step-num" x="47" y="106" text-anchor="middle">1</text>
+              <text class="flow-title" x="37" y="138">目标用户登录</text><text class="flow-sub" x="37" y="160">写 app_user</text>
+            </g>
+            <line class="flow-line" x1="190" y1="130" x2="202" y2="130" marker-end="url(#mF5)"/>
+            <g>
+              <rect class="flow-box flow-box-4" x="205" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="227" cy="102" r="11"/><text class="step-num" x="227" y="106" text-anchor="middle">2</text>
+              <text class="flow-title" x="217" y="138">超管打开授权</text><text class="flow-sub" x="217" y="160">用户授权页</text>
+            </g>
+            <line class="flow-line" x1="370" y1="130" x2="382" y2="130" marker-end="url(#mF5)"/>
+            <g>
+              <rect class="flow-box flow-box-3" x="385" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="407" cy="102" r="11"/><text class="step-num" x="407" y="106" text-anchor="middle">3</text>
+              <text class="flow-title" x="397" y="138">GET /admin/users</text><text class="flow-sub" x="397" y="160">校验 is_super=1</text>
+            </g>
+            <line class="flow-line" x1="550" y1="130" x2="562" y2="130" marker-end="url(#mF5)"/>
+            <g>
+              <rect class="flow-box flow-box-4" x="565" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="587" cy="102" r="11"/><text class="step-num" x="587" y="106" text-anchor="middle">4</text>
+              <text class="flow-title" x="577" y="138">选择用户</text><text class="flow-sub" x="577" y="160">打开商家端开关</text>
+            </g>
+            <line class="flow-line" x1="730" y1="130" x2="742" y2="130" marker-end="url(#mF5)"/>
+            <g>
+              <rect class="flow-box flow-box-1" x="745" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="767" cy="102" r="11"/><text class="step-num" x="767" y="106" text-anchor="middle">5</text>
+              <text class="flow-title" x="757" y="138">PATCH access</text><text class="flow-sub" x="757" y="160">写 can_merchant</text>
+              <text class="flow-sub" x="757" y="177">记授权人与时间</text>
+            </g>
+            <line class="flow-line" x1="910" y1="130" x2="922" y2="130" marker-end="url(#mF5)"/>
+            <g>
+              <rect class="flow-box flow-box-2" x="925" y="80" width="175" height="100" rx="14"/>
+              <circle class="step-dot" cx="947" cy="102" r="11"/><text class="step-num" x="947" y="106" text-anchor="middle">6</text>
+              <text class="flow-title" x="937" y="138">下次请求生效</text><text class="flow-sub" x="937" y="160">现查 can_merchant</text>
+              <text class="flow-sub" x="937" y="177">撤销立即 403</text>
+            </g>
+            <text class="flow-note" x="30" y="222">首个登录用户自动成为超级用户；is_super 无任何授予接口。</text>
+          </svg>
+        </div>
+        <div class="caption">角色不写进 JWT，授权与撤销都在下一次请求立即生效。</div>
+      </div>
+
+      <!-- 取消 -->
+      <div class="panel" id="cancel">
+        <div class="panel-head">
+          <div class="panel-title">06 · 软删除取消订单</div>
+          <div class="panel-note">入口：待处理订单 → 取消</div>
+        </div>
+        <div class="figure">
+          <svg viewBox="0 0 1160 270" role="img" aria-labelledby="flowCancelTitle">
+            <title id="flowCancelTitle">软删除取消订单流程</title>
+            <defs>
+              <marker id="mF6" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,6 L9,3 z" fill="#a3927d"/>
+              </marker>
+            </defs>
+            <text class="flow-note" x="30" y="38">取消不新增状态：orders.status 仍是 pending，用 deleted_at 表达删除。</text>
+            <g>
+              <rect class="flow-box flow-box-3" x="25" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="47" cy="102" r="11"/><text class="step-num" x="47" y="106" text-anchor="middle">1</text>
+              <text class="flow-title" x="37" y="138">待处理订单</text><text class="flow-sub" x="37" y="160">客户或商家点取消</text>
+            </g>
+            <line class="flow-line" x1="190" y1="130" x2="202" y2="130" marker-end="url(#mF6)"/>
+            <g>
+              <rect class="flow-box flow-box-1" x="205" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="227" cy="102" r="11"/><text class="step-num" x="227" y="106" text-anchor="middle">2</text>
+              <text class="flow-title" x="217" y="138">DELETE /orders</text><text class="flow-sub" x="217" y="160">请求取消</text>
+            </g>
+            <line class="flow-line" x1="370" y1="130" x2="382" y2="130" marker-end="url(#mF6)"/>
+            <g>
+              <rect class="flow-box flow-box-3" x="385" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="407" cy="102" r="11"/><text class="step-num" x="407" y="106" text-anchor="middle">3</text>
+              <text class="flow-title" x="397" y="138">校验权限</text><text class="flow-sub" x="397" y="160">客户仅本人</text>
+              <text class="flow-sub" x="397" y="177">商家可任意</text>
+            </g>
+            <line class="flow-line" x1="550" y1="130" x2="562" y2="130" marker-end="url(#mF6)"/>
+            <g>
+              <rect class="flow-box flow-box-6" x="565" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="587" cy="102" r="11"/><text class="step-num" x="587" y="106" text-anchor="middle">4</text>
+              <text class="flow-title" x="577" y="138">仅 pending</text><text class="flow-sub" x="577" y="160">cooking / completed</text>
+              <text class="flow-sub" x="577" y="177">拒绝取消</text>
+            </g>
+            <line class="flow-line" x1="730" y1="130" x2="742" y2="130" marker-end="url(#mF6)"/>
+            <g>
+              <rect class="flow-box flow-box-5" x="745" y="80" width="165" height="100" rx="14"/>
+              <circle class="step-dot" cx="767" cy="102" r="11"/><text class="step-num" x="767" y="106" text-anchor="middle">5</text>
+              <text class="flow-title" x="757" y="138">写删除标记</text><text class="flow-sub" x="757" y="160">deleted_at</text>
+              <text class="flow-sub" x="757" y="177">deleted_by_user_id</text>
+            </g>
+            <line class="flow-line" x1="910" y1="130" x2="922" y2="130" marker-end="url(#mF6)"/>
+            <g>
+              <rect class="flow-box flow-box-2" x="925" y="80" width="175" height="100" rx="14"/>
+              <circle class="step-dot" cx="947" cy="102" r="11"/><text class="step-num" x="947" y="106" text-anchor="middle">6</text>
+              <text class="flow-title" x="937" y="138">全局排除</text><text class="flow-sub" x="937" y="160">列表 / 日历 / 采购</text>
+              <text class="flow-sub" x="937" y="177">详情 404</text>
+            </g>
+            <rect class="flow-chip-bg" x="498" y="202" width="340" height="26" rx="7"/>
+            <text class="flow-chip" x="516" y="219" fill="#a4483c">非 pending → 409 ORDER_NOT_DELETABLE</text>
+          </svg>
+        </div>
+        <div class="caption">软删除保留追溯能力；采购快照不物理删除，只在下一次聚合时排除。</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 04 预留 -->
+  <section class="section" id="reserved">
+    <div class="section-head">
+      <div>
+        <div class="num">04 / RESERVED</div>
+        <h2>预留设计：本期不实现</h2>
+      </div>
+      <p>两项功能只留设计位置：将来只做加法，不改现有表结构、订单模型和权限模型。本期没有入口、没有接口、没有数据写入。</p>
+    </div>
+
+    <div class="reserved">
+      <div class="res-card">
+        <span class="tag tag-off">本期不实现</span>
+        <h3>AI 推荐菜品</h3>
+        <p>后续单独补充。当前不建推荐表、不做推荐接口、不在菜单页放推荐位。</p>
+        <ul>
+          <li><b>前端入口：</b>菜单页顶部“为你推荐”横向卡片；菜品详情“猜你喜欢”。未启用或调用失败时整块隐藏。</li>
+          <li><b>将来接口：</b><code>GET /api/v1/recommendations?scene=menu&amp;limit=5</code>，返回菜品、分数、推荐理由；独立模块，不改现有订单/菜单接口。</li>
+          <li><b>将来表：</b>独立表 <code>recommendation_event</code>（user_id、dish_id、scene、score、reason、model_version、created_at）；可选给 <code>dish</code> 加可空列 <code>ai_tags</code>。均为加法，不迁移现有字段。</li>
+          <li><b>数据来源：</b>现有 <code>orders</code>、<code>order_item</code>、<code>review</code>、<code>review_item</code>、<code>dish_ingredient</code> 足够做召回特征。</li>
+        </ul>
+      </div>
+
+      <div class="res-card">
+        <span class="tag tag-off">本期不实现</span>
+        <h3>中英文切换</h3>
+        <p>本期界面与接口全部中文，不放语言开关，不写英文字段。</p>
+        <ul>
+          <li><b>已留字段：</b><code>app_user.locale</code>、<code>dish_category.name_en</code>、<code>dish.name_en</code>、<code>dish.intro_en</code>、<code>ingredient.name_en</code>、<code>order_item.name_en</code>、<code>order_ingredient.name_en</code>，均可空。</li>
+          <li><b>将来前端：</b>我的页加语言切换；新增 <code>i18n/zh-CN.ts</code> 与 <code>i18n/en-US.ts</code>，统一 <code>t(key)</code>；首次启动跟随系统。</li>
+          <li><b>将来接口：</b><code>/me</code> 返回 locale；<code>PATCH /me</code> 接收 locale；菜单/菜品接口返回 <code>{zh, en}</code> 或按 locale 选值；错误码保持稳定。</li>
+          <li><b>不需要迁移：</b>字段已预留；本期只读写中文，英文为空回退中文。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 对齐说明 -->
+  <section class="section" id="notes">
+    <div class="section-head">
+      <div>
+        <div class="num">05 / CONSISTENCY NOTES</div>
+        <h2>对齐说明与取舍</h2>
+      </div>
+      <p>本轮把 <code>方案设计.md</code> 中“中英文已实现”的表述修正为“预留”，并补齐字段级模型与 DDL。以下为评审时需要留意的取舍。</p>
+    </div>
+
+    <div class="notes">
+      <div class="panel">
+        <div class="panel-title" style="margin-bottom:12px">本次对齐修订</div>
+        <ul class="checklist">
+          <li><span>01</span>中英文切换改为本期不实现：去掉 <code>locale</code> 接口参数与页面语言开关，保留 <code>locale</code> / <code>name_en</code> / <code>intro_en</code> 字段。</li>
+          <li><span>02</span>AI 推荐不进入现有表：本期不加字段、不加接口，将来以独立表 + 独立路由 + 菜单页条件区块追加。</li>
+          <li><span>03</span>订单保持三状态：取消用 <code>deleted_at</code> 软删除，不新增 <code>cancelled</code> 状态，不物理删除。</li>
+          <li><span>04</span>采购只查 <code>order_ingredient</code> 快照，按食材去重；无数量、单位、库存、成本。</li>
+          <li><span>05</span>所有图表与 <code>docs/架构与数据模型.md</code> 的 DDL 一致；DDL 已在内存 SQLite 中执行通过，10 张表、12 个显式索引。</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <div class="panel-title" style="margin-bottom:12px">评审注意事项</div>
+        <ul class="checklist">
+          <li><span>01</span>本期所有角色切换都不换账号，订单隔离依赖 <code>customer_id</code>。</li>
+          <li><span>02</span><code>cooking</code> 与 <code>completed</code> 不可取消；异常走线下沟通。</li>
+          <li><span>03</span>首个登录用户自动成为超级用户，存在抢注风险，需确认部署顺序或改用初始化口令。</li>
+          <li><span>04</span>服务器与备案域名尚未确认；小程序合法域名必须 HTTPS 且备案。</li>
+          <li><span>05</span>不做自动备份；SQLite 单文件按需自行拷贝。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="shell">
+    <div>小张的餐厅 · 架构与流程图册 · 静态单文件，无外链依赖</div>
+    <div>
+      配套文档：
+      <a class="doc-link" href="docs/方案设计.md">方案设计.md</a>
+      ·
+      <a class="doc-link" href="docs/架构与数据模型.md">架构与数据模型.md</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

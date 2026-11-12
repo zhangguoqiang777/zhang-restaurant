@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "日历",
+  "usingComponents": {
+    "tab-bar": "/components/tab-bar/index",
+    "dish-art": "/components/dish-art/index"
+  }
+}

@@ -1,0 +1,124 @@
+.review-page {
+  min-height: 100vh;
+  padding: 24rpx 32rpx 0;
+  background: var(--bg);
+}
+
+.review-hero {
+  padding: 12rpx 4rpx 26rpx;
+}
+
+.rh-eyebrow {
+  font-size: 21rpx;
+  letter-spacing: 0.08em;
+  color: var(--brand-deep);
+  font-weight: 600;
+}
+
+.rh-title {
+  margin-top: 10rpx;
+  font-size: 44rpx;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.rh-sub {
+  margin-top: 8rpx;
+  font-size: 23rpx;
+  color: var(--ink-3);
+}
+
+.form-card {
+  padding: 30rpx 28rpx;
+}
+
+.tap-stars {
+  display: flex;
+  gap: 18rpx;
+  padding: 6rpx 0 2rpx;
+}
+
+.tap-star {
+  font-size: 68rpx;
+  line-height: 1;
+  color: #DCCBBC;
+  transition: transform 0.1s;
+}
+
+.tap-star.on {
+  color: var(--star);
+}
+
+.tap-star:active {
+  transform: scale(1.12);
+}
+
+.rating-word {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: var(--brand-deep);
+  font-weight: 500;
+}
+
+.content-label {
+  margin-top: 30rpx;
+}
+
+.dish-card {
+  padding: 6rpx 28rpx;
+}
+
+.dish-review {
+  padding: 24rpx 0;
+}
+
+.dish-review + .dish-review {
+  border-top: 1rpx solid var(--line-2);
+}
+
+.dr-name {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.dr-input {
+  margin-top: 16rpx;
+  height: 72rpx;
+  padding: 0 20rpx;
+  border-radius: var(--r-sm);
+  background: var(--field-bg);
+  border: 1rpx solid var(--line-2);
+  font-size: 24rpx;
+  color: var(--ink);
+}
+
+.existing-card {
+  padding: 30rpx 28rpx;
+}
+
+.existing-text {
+  margin-top: 18rpx;
+  font-size: 26rpx;
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+
+.existing-item {
+  padding: 18rpx 0;
+}
+
+.existing-item + .existing-item {
+  border-top: 1rpx solid var(--line-2);
+}
+
+.ei-name {
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+.ei-content {
+  margin-top: 8rpx;
+  font-size: 23rpx;
+  line-height: 1.6;
+  color: var(--ink-3);
+}

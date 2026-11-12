@@ -1,0 +1,63 @@
+{
+  "pages": [
+    "pages/entry/index",
+    "pages/customer/menu/index"
+  ],
+  "subpackages": [
+    {
+      "root": "packageCustomer",
+      "name": "customer",
+      "pages": [
+        "dish/index",
+        "cart/index",
+        "orders/index",
+        "order-detail/index",
+        "review/index",
+        "calendar/index"
+      ]
+    },
+    {
+      "root": "packageMerchant",
+      "name": "merchant",
+      "pages": [
+        "board/index",
+        "order-detail/index",
+        "purchase/index",
+        "dishes/index",
+        "dish-edit/index",
+        "ingredients/index"
+      ]
+    },
+    {
+      "root": "packageAdmin",
+      "name": "admin",
+      "pages": [
+        "users/index"
+      ]
+    },
+    {
+      "root": "packageCommon",
+      "name": "common",
+      "pages": [
+        "profile/index"
+      ]
+    }
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#FFFCF7",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "小张的餐厅",
+    "backgroundColor": "#F4EEE5",
+    "backgroundColorTop": "#F4EEE5",
+    "backgroundColorBottom": "#F4EEE5",
+    "backgroundTextStyle": "dark",
+    "enablePullDownRefresh": false
+  },
+  "networkTimeout": {
+    "request": 15000,
+    "uploadFile": 30000
+  },
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
+  "sitemapLocation": "sitemap.json"
+}

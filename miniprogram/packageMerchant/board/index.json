@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "订单看板",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "tab-bar": "/components/tab-bar/index"
+  }
+}

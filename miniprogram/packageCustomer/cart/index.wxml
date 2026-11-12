@@ -1,0 +1,79 @@
+<view class="cart-page page-with-bottom">
+  <view wx:if="{{!items.length}}" class="state-block empty-cart">
+    <view class="state-mark">空</view>
+    <view class="state-title">购物车还是空的</view>
+    <view class="state-desc">先去菜单挑几道菜。购物车只记录份数与备注，不涉及金额。</view>
+    <view class="state-action" bindtap="goMenu">去点餐</view>
+  </view>
+
+  <block wx:else>
+    <view class="cart-head">
+      <view>
+        <view class="cart-title">已选 {{kinds}} 种</view>
+        <view class="tiny">共 {{count}} 份 · 提交后商家直接看到</view>
+      </view>
+      <view class="clear-link" bindtap="clearAll">清空</view>
+    </view>
+
+    <view class="cart-list">
+      <view wx:for="{{items}}" wx:key="dishId" class="cart-item">
+        <view class="cart-art">
+          <dish-art image-key="{{item.imageKey}}" name="{{item.nameZh}}" />
+        </view>
+        <view class="cart-info">
+          <view class="cart-name ellipsis">{{item.nameZh}}</view>
+          <view class="cart-intro clamp-2">{{item.introZh || '现点现做，热乎上桌。'}}</view>
+          <view class="cart-row">
+            <text class="tiny">份数</text>
+            <view class="stepper sm">
+              <view
+                class="step-btn"
+                catchtap="minus"
+                data-id="{{item.dishId}}"
+                data-qty="{{item.qty}}"
+              >−</view>
+              <view class="step-q">{{item.qty}}</view>
+              <view
+                class="step-btn"
+                catchtap="plus"
+                data-id="{{item.dishId}}"
+                data-qty="{{item.qty}}"
+              >+</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="remark-card card">
+      <view class="remark-top">
+        <view>
+          <view class="remark-title">整单备注</view>
+          <view class="tiny">口味、忌口、装盘要求都可以写</view>
+        </view>
+        <view class="remark-count">{{remarkLen}}/60</view>
+      </view>
+      <textarea
+        class="remark-input"
+        value="{{remark}}"
+        maxlength="60"
+        placeholder="例如：少盐、不放葱、米饭分开装"
+        placeholder-class="input-ph"
+        bindinput="onRemark"
+      />
+    </view>
+
+    <view class="note-line">
+      <view class="note-dot">i</view>
+      <text>本期不包含价格与支付。提交订单后，商家在订单看板收到这一单，并按份数开始制作。</text>
+    </view>
+  </block>
+</view>
+
+<view class="bottom-bar cart-bottom" wx:if="{{items.length}}">
+  <view class="cb-sum">
+    <view class="cb-count">{{count}} 份</view>
+    <view class="tiny">共 {{kinds}} 道菜</view>
+  </view>
+  <view class="cb-btn {{submitting ? 'disabled' : ''}}" bindtap="submit">{{submitting ? '提交中…' : '提交订单'}}</view>
+</view>

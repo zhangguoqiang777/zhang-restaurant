@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "购物车",
+  "usingComponents": {
+    "dish-art": "/components/dish-art/index"
+  }
+}
