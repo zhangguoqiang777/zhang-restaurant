@@ -1,4 +1,4 @@
-import { wxLogin } from './api/auth';
+import { fetchMe, wxLogin } from './api/auth';
 import { setUnauthorizedHandler } from './api/request';
 import type { UserInfo } from './types/models';
 import { normalizeUser } from './utils/normalize';
@@ -49,8 +49,7 @@ App({
                 id: result.userId,
                 nickname: result.nickname || (cached && cached.nickname) || '',
                 isSuper: result.isSuper,
-                canMerchant: result.canMerchant,
-                lastRole: result.lastRole
+                canMerchant: result.canMerchant
               });
               setToken(result.token);
               setCachedUser(merged);
@@ -85,6 +84,20 @@ App({
   setUser(user: UserInfo) {
     this.globalData.user = user;
     setCachedUser(user);
+  },
+
+  /**
+   * 拉取最新用户权限，用于授权/撤销商家权限后刷新 tabBar 与页面守卫。
+   * 失败时回退当前缓存，不打断页面。
+   */
+  async refreshUser(): Promise<UserInfo | null> {
+    try {
+      const me = await fetchMe();
+      this.setUser(me);
+      return me;
+    } catch (err) {
+      return this.globalData.user || getCachedUser();
+    }
   },
 
   clearSession() {

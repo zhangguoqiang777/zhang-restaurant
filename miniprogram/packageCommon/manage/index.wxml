@@ -1,0 +1,51 @@
+<view class="manage-page page-with-tab">
+  <view class="manage-hero">
+    <view class="mh-main">
+      <view class="mh-kicker">{{isSuper ? '超级用户' : '商家'}}工作台</view>
+      <view class="mh-title">{{nickname || '小张的餐厅'}}</view>
+      <view class="mh-desc">订单、采购、菜品与食材都在这里；进入小程序仍从点餐开始。</view>
+    </view>
+    <view class="mh-badge">{{isSuper ? '超管' : '商家'}}</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-line">正在确认权限…</view>
+
+  <view wx:elif="{{error}}" class="state-block">
+    <view class="state-mark">!</view>
+    <view class="state-title">管理页没有加载出来</view>
+    <view class="state-desc">{{error}}</view>
+    <view class="state-action" bindtap="retry">重新加载</view>
+  </view>
+
+  <block wx:else>
+    <view wx:for="{{groups}}" wx:key="key" class="entry-group">
+      <view class="section-head">
+        <text class="title">{{item.title}}</text>
+        <text class="more">{{item.hint}}</text>
+      </view>
+      <view class="card entry-list">
+        <view
+          wx:for="{{item.items}}"
+          wx:for-item="entry"
+          wx:key="key"
+          class="entry-row"
+          bindtap="openEntry"
+          data-url="{{entry.url}}"
+        >
+          <view class="er-ic {{entry.tone}}">{{entry.glyph}}</view>
+          <view class="er-main">
+            <view class="er-title">{{entry.title}}</view>
+            <view class="er-desc">{{entry.desc}}</view>
+          </view>
+          <view class="chevron right"></view>
+        </view>
+      </view>
+    </view>
+
+    <view class="manage-note">
+      商家端权限由超级用户在「用户授权」中开关，撤销后立即生效。若权限被关闭，页面会自动回到点餐，不会停留在无权页面。
+    </view>
+  </block>
+</view>
+
+<tab-bar merchant="{{hasMerchant}}" active="manage" />

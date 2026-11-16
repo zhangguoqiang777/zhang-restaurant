@@ -9,7 +9,7 @@ import {
 import { uploadDishImage } from '../../api/upload';
 import type { Category, Dish, Ingredient } from '../../types/models';
 import { errorText, toastError } from '../../utils/error';
-import { guardRole } from '../../utils/role';
+import { guardManage, resolveUser } from '../../utils/role';
 
 interface IngredientView extends Ingredient {
   selected: boolean;
@@ -47,17 +47,14 @@ Page({
   },
 
   async bootstrap() {
-    const app = getApp<IAppOption>();
-    let user;
     try {
-      user = await app.ensureLogin();
+      const user = await resolveUser();
+      if (!guardManage(user)) return;
+      this.accessReady = true;
+      await this.loadForm();
     } catch (err: any) {
       this.setData({ loading: false, error: errorText(err) });
-      return;
     }
-    if (!guardRole('merchant', user)) return;
-    this.accessReady = true;
-    await this.loadForm();
   },
 
   async loadForm() {

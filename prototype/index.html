@@ -140,7 +140,7 @@
 <header class="page-head">
   <div class="eyebrow">Visual Prototype · v1</div>
   <h1>小张的餐厅 · <span>界面原型</span></h1>
-  <p>按微信小程序视觉规范还原的高保真静态稿：14 个屏幕，三种视角，只呈现视觉与交互状态。不含价格、支付、取餐与桌号。</p>
+  <p>按微信小程序视觉规范还原的高保真静态稿：14 个屏幕，按权限呈现三种身份，只呈现视觉与交互状态。进入即点餐，商家与超管入口收在「管理」页。不含价格、支付、取餐与桌号。</p>
   <div class="meta-row">
     <span class="meta-chip"><b>14</b> 个屏幕</span>
     <span class="meta-chip">主色 <b>#C0603C</b></span>
@@ -151,59 +151,100 @@
 </header>
 
 <main class="stage">
-  <!-- 1 角色选择 -->
+  <!-- 1 管理入口（按权限出现） -->
   <section class="phone-wrap">
     <div class="device">
       <div class="screen">
         <div class="island"></div>
         <div class="statusbar"><span>9:41</span><svg class="sb-icons"><use href="#sb"/></svg></div>
-        <div class="screen-body" style="padding:0 16px">
+        <div class="navbar">管理
+          <div class="capsule"><span class="dots">•••</span><span class="divider"></span><span class="ring"></span></div>
+        </div>
+        <div class="screen-body">
           <div class="role-hero">
-            <div class="brand-mark"><svg><use href="#i-bowl"/></svg></div>
-            <h2>小张的餐厅</h2>
-            <p class="tagline">今天想吃什么，直接点。</p>
-            <span class="quote"><svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.7"><use href="#i-lock"/></svg>登录状态已保存 · 用户 #1042</span>
+            <div class="brand-mark"><svg><use href="#i-board"/></svg></div>
+            <h2>管理</h2>
+            <p class="tagline">进入小程序先点餐；有商家权限时，底部才会出现这里。</p>
+            <span class="quote"><svg style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.7"><use href="#i-shield"/></svg>超级用户 · 额外可见「用户授权」</span>
           </div>
+
+          <div class="section-head"><h3>订单与采购</h3><span class="more">先接单，再备菜</span></div>
           <div class="role-list">
-            <div class="role-card selected">
-              <div class="role-icon"><svg><use href="#i-smile"/></svg></div>
+            <div class="role-card">
+              <div class="role-icon"><svg><use href="#i-receipt"/></svg></div>
               <div>
-                <h4>我是吃饭人</h4>
-                <p>看菜单、下单、查订单、评价与日历</p>
+                <h4>订单看板</h4>
+                <p>按日期查看全部订单，进入订单处理并推进状态</p>
               </div>
-              <span class="role-check"><svg><path d="M2 6l3 3 5-6" fill="none" stroke="#fff" stroke-width="2.2"/></svg></span>
+              <span class="manage-chev">›</span>
             </div>
             <div class="role-card">
-              <div class="role-icon dark"><svg><use href="#i-chef"/></svg></div>
+              <div class="role-icon amber"><svg><use href="#i-basket"/></svg></div>
               <div>
-                <h4>我是做饭人</h4>
-                <p>接单、推进制作、采购与菜品维护</p>
+                <h4>采购清单</h4>
+                <p>按天汇总需要准备的食材，已排除取消订单</p>
               </div>
-              <span class="role-check"></span>
+              <span class="manage-chev">›</span>
             </div>
+          </div>
+
+          <div class="section-head"><h3>菜品与食材</h3><span class="more">菜单维护</span></div>
+          <div class="role-list">
+            <div class="role-card">
+              <div class="role-icon dark"><svg><use href="#i-dish"/></svg></div>
+              <div>
+                <h4>菜品管理</h4>
+                <p>搜索、筛选、上下架与分类管理，进入菜品编辑</p>
+              </div>
+              <span class="manage-chev">›</span>
+            </div>
+            <div class="role-card">
+              <div class="role-icon"><svg><use href="#i-plus"/></svg></div>
+              <div>
+                <h4>新增菜品</h4>
+                <p>名称、分类、简介、图片与食材配方</p>
+              </div>
+              <span class="manage-chev">›</span>
+            </div>
+            <div class="role-card">
+              <div class="role-icon green"><svg><use href="#i-leaf"/></svg></div>
+              <div>
+                <h4>食材库</h4>
+                <p>新增、改名与启停食材，供菜品配方勾选</p>
+              </div>
+              <span class="manage-chev">›</span>
+            </div>
+          </div>
+
+          <div class="section-head"><h3>账号与权限</h3><span class="pill pill-completed">仅超管</span></div>
+          <div class="role-list">
             <div class="role-card">
               <div class="role-icon green"><svg><use href="#i-shield"/></svg></div>
               <div>
-                <h4>超级用户</h4>
-                <p>授权商家端访问，查看全部已登录用户</p>
+                <h4>用户授权</h4>
+                <p>开启或关闭他人的商家端权限，撤销立即生效</p>
               </div>
-              <span class="role-check"></span>
+              <span class="manage-chev">›</span>
             </div>
           </div>
+
           <div class="role-note">
             <svg><use href="#i-info"/></svg>
-            <span>切换视角不换账号。商家与超级用户入口由超级用户在「用户授权」中开启，开启后立即生效。</span>
+            <span>tab 由权限生成：纯客户 4 个；有商家权限 5 个，第 4 个是「管理」。权限被撤销后自动回到点餐。</span>
           </div>
-          <div class="entry-foot">进入后可在「我的」再次切换视角</div>
         </div>
-        <div class="bottom-bar">
-          <button class="brand-btn">进入客户视角</button>
-        </div>
+        <nav class="tabbar">
+          <div class="tab"><svg><use href="#i-bowl"/></svg><span>点餐</span></div>
+          <div class="tab"><svg><use href="#i-receipt"/></svg><span>订单</span></div>
+          <div class="tab"><svg><use href="#i-cal"/></svg><span>日历</span></div>
+          <div class="tab active"><svg><use href="#i-board"/></svg><span>管理</span></div>
+          <div class="tab"><svg><use href="#i-user"/></svg><span>我的</span></div>
+        </nav>
       </div>
     </div>
     <div class="screen-label">
       <span class="idx">01</span>
-      <div class="txt"><div class="name">角色选择</div><div class="note">登录后先选视角；单视角可跳过此页</div></div>
+      <div class="txt"><div class="name">管理入口</div><div class="note">启动直接到点餐；有商家权限时 tab 出现「管理」</div></div>
       <span class="kind">入口</span>
     </div>
   </section>
@@ -282,7 +323,7 @@
     </div>
     <div class="screen-label">
       <span class="idx">02</span>
-      <div class="txt"><div class="name">客户菜单</div><div class="note">左分类 + 右卡片；只展示图片、名称、简介与分类</div></div>
+      <div class="txt"><div class="name">客户菜单</div><div class="note">启动页；纯客户 4 项 tabBar，有商家权限时第 4 项为「管理」</div></div>
       <span class="kind">客户</span>
     </div>
   </section>
@@ -682,17 +723,11 @@
 
           <div class="group-title"><span class="bar done"></span>今日完成<span class="cnt">3 单</span><span class="tiny" style="margin-left:auto">查看全部 ›</span></div>
         </div>
-        <nav class="tabbar">
-          <div class="tab active"><svg><use href="#i-board"/></svg><span>订单</span></div>
-          <div class="tab"><svg><use href="#i-basket"/></svg><span>采购</span></div>
-          <div class="tab"><svg><use href="#i-dish"/></svg><span>菜品</span></div>
-          <div class="tab"><svg><use href="#i-user"/></svg><span>我的</span></div>
-        </nav>
       </div>
     </div>
     <div class="screen-label">
       <span class="idx">09</span>
-      <div class="txt"><div class="name">商家订单看板</div><div class="note">全部用户订单，按三状态分组；30s 轮询</div></div>
+      <div class="txt"><div class="name">商家订单看板</div><div class="note">从管理页进入；全部用户订单，按三状态分组；30s 轮询</div></div>
       <span class="kind">商家</span>
     </div>
   </section>
@@ -809,17 +844,11 @@
           </div>
           <div class="purchase-note">采购清单只记录“需要哪些食材”，不提供数量、单位、库存与成本；同一食材多单只显示一条。</div>
         </div>
-        <nav class="tabbar">
-          <div class="tab"><svg><use href="#i-board"/></svg><span>订单</span></div>
-          <div class="tab active"><svg><use href="#i-basket"/></svg><span>采购</span></div>
-          <div class="tab"><svg><use href="#i-dish"/></svg><span>菜品</span></div>
-          <div class="tab"><svg><use href="#i-user"/></svg><span>我的</span></div>
-        </nav>
       </div>
     </div>
     <div class="screen-label">
       <span class="idx">11</span>
-      <div class="txt"><div class="name">采购清单</div><div class="note">按食材聚合去重，标注涉及订单；无数量与成本</div></div>
+      <div class="txt"><div class="name">采购清单</div><div class="note">从管理页进入；按食材聚合去重，标注涉及订单；无数量与成本</div></div>
       <span class="kind">商家</span>
     </div>
   </section>
@@ -867,17 +896,11 @@
           </div>
           <div class="purchase-note">菜品没有价格与成本字段。未配置食材的菜品不会进入采购清单，编辑页会提示。</div>
         </div>
-        <nav class="tabbar">
-          <div class="tab"><svg><use href="#i-board"/></svg><span>订单</span></div>
-          <div class="tab"><svg><use href="#i-basket"/></svg><span>采购</span></div>
-          <div class="tab active"><svg><use href="#i-dish"/></svg><span>菜品</span></div>
-          <div class="tab"><svg><use href="#i-user"/></svg><span>我的</span></div>
-        </nav>
       </div>
     </div>
     <div class="screen-label">
       <span class="idx">12</span>
-      <div class="txt"><div class="name">菜品管理列表</div><div class="note">搜索 / 筛选 / 上下架开关；无价格列</div></div>
+      <div class="txt"><div class="name">菜品管理列表</div><div class="note">从管理页进入；搜索 / 筛选 / 上下架开关；无价格列</div></div>
       <span class="kind">商家</span>
     </div>
   </section>
@@ -1007,16 +1030,11 @@
             <span>权限每次请求实时查询，撤销后立即生效，不用等登录过期。超级用户身份不能通过此页授予或转让。</span>
           </div>
         </div>
-        <nav class="tabbar">
-          <div class="tab active"><svg><use href="#i-shield"/></svg><span>授权</span></div>
-          <div class="tab"><svg><use href="#i-board"/></svg><span>订单</span></div>
-          <div class="tab"><svg><use href="#i-user"/></svg><span>我的</span></div>
-        </nav>
       </div>
     </div>
     <div class="screen-label">
       <span class="idx">14</span>
-      <div class="txt"><div class="name">超管用户授权页</div><div class="note">从登录用户中开关商家端权限；即时生效</div></div>
+      <div class="txt"><div class="name">超管用户授权页</div><div class="note">从管理页进入；从登录用户中开关商家端权限；即时生效</div></div>
       <span class="kind">超级用户</span>
     </div>
   </section>

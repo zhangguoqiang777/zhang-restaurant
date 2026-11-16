@@ -1,8 +1,9 @@
 import { fetchCategories, fetchDishes } from '../../../api/menu';
-import type { Category, Dish } from '../../../types/models';
+import type { Category, Dish, UserInfo } from '../../../types/models';
 import { addToCart, cartCount, cartKinds } from '../../../utils/cart';
 import { errorText } from '../../../utils/error';
 import { greeting } from '../../../utils/format';
+import { canManage, resolveUser } from '../../../utils/role';
 
 interface CategoryWithCount extends Category {
   count: number;
@@ -27,32 +28,56 @@ Page({
     loading: true,
     loadError: '',
     cartCount: 0,
-    cartKinds: 0
+    cartKinds: 0,
+    hasMerchant: false
   },
 
+  booted: false,
+
   onLoad() {
+    const cached = getApp<IAppOption>().globalData.user;
+    if (cached) this.applyUser(cached);
     this.init();
   },
 
   onShow() {
     this.refreshCart();
+    // 权限可能刚被超级用户修改，进入页面时同步一次，tabBar 随之更新
+    if (this.booted) this.syncUser();
+  },
+
+  onPullDownRefresh() {
+    Promise.all([this.syncUser(), this.loadMenu()]).then(() => wx.stopPullDownRefresh());
   },
 
   async init() {
-    const app = getApp<IAppOption>();
     try {
-      const user = await app.ensureLogin();
-      const hello = greeting();
-      const nickname = user.nickname || '';
-      this.setData({
-        nickname,
-        greeting: hello,
-        greetText: nickname ? `${hello}，${nickname}` : hello
-      });
+      const user = await resolveUser();
+      this.applyUser(user);
+      this.booted = true;
       await this.loadMenu();
     } catch (err: any) {
       this.setData({ loading: false, loadError: errorText(err) });
     }
+  },
+
+  applyUser(user: UserInfo) {
+    const hello = greeting();
+    const nickname = user.nickname || '';
+    this.setData({
+      nickname,
+      greeting: hello,
+      greetText: nickname ? `${hello}，${nickname}` : hello,
+      hasMerchant: canManage(user)
+    });
+  },
+
+  async syncUser() {
+    const app = getApp<IAppOption>();
+    const cached = app.globalData.user;
+    if (cached) this.applyUser(cached);
+    const user = await app.refreshUser();
+    if (user) this.applyUser(user);
   },
 
   async loadMenu() {

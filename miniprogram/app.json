@@ -1,6 +1,5 @@
 {
   "pages": [
-    "pages/entry/index",
     "pages/customer/menu/index"
   ],
   "subpackages": [
@@ -39,7 +38,8 @@
       "root": "packageCommon",
       "name": "common",
       "pages": [
-        "profile/index"
+        "profile/index",
+        "manage/index"
       ]
     }
   ],

@@ -7,7 +7,7 @@ import {
 import type { Order } from '../../types/models';
 import { errorText, toastError } from '../../utils/error';
 import { formatOrderTime, initial, statusPillClass, statusText } from '../../utils/format';
-import { guardRole } from '../../utils/role';
+import { guardManage, resolveUser } from '../../utils/role';
 
 interface TimelineNode {
   key: string;
@@ -113,25 +113,22 @@ Page({
   },
 
   async bootstrap() {
-    const app = getApp<IAppOption>();
-    let user;
     try {
-      user = await app.ensureLogin();
+      const user = await resolveUser();
+      if (!guardManage(user)) return;
+      this.accessReady = true;
+      this.load(true);
+      this.startTimer();
     } catch (err: any) {
       this.setData({ loading: false, error: errorText(err) });
-      return;
     }
-    if (!guardRole('merchant', user)) return;
-    this.accessReady = true;
-    this.load(true);
-    this.startTimer();
   },
 
-  onShow() {
-    if (this.accessReady) {
-      this.load(false);
-      this.startTimer();
-    }
+  async onShow() {
+    if (!this.accessReady) return;
+    if (!(await this.ensureAccess())) return;
+    this.load(false);
+    this.startTimer();
   },
 
   onHide() {
@@ -142,8 +139,21 @@ Page({
     this.stopTimer();
   },
 
-  onPullDownRefresh() {
+  async onPullDownRefresh() {
+    if (!(await this.ensureAccess())) {
+      wx.stopPullDownRefresh();
+      return;
+    }
     this.load(false).then(() => wx.stopPullDownRefresh());
+  },
+
+  async ensureAccess(): Promise<boolean> {
+    const app = getApp<IAppOption>();
+    const user = await app.refreshUser();
+    if (guardManage(user)) return true;
+    this.stopTimer();
+    this.accessReady = false;
+    return false;
   },
 
   startTimer() {
@@ -225,7 +235,12 @@ Page({
   },
 
   backToBoard() {
-    wx.reLaunch({ url: '/packageMerchant/board/index' });
+    const pages = getCurrentPages();
+    if (pages.length > 1) {
+      wx.navigateBack();
+    } else {
+      wx.reLaunch({ url: '/packageMerchant/board/index' });
+    }
   },
 
   reload() {

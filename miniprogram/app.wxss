@@ -44,7 +44,7 @@ page {
   --r-pill: 999rpx;
 
   /* 字号层级（1px = 2rpx） */
-  --fs-display: 56rpx;  /* 28 角色选择主标题 */
+  --fs-display: 56rpx;  /* 28 展示标题 */
   --fs-page: 46rpx;     /* 23 菜品详情菜名 */
   --fs-block: 38rpx;    /* 19 区块标题 */
   --fs-nav: 34rpx;      /* 17 导航标题 */

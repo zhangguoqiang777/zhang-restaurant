@@ -2,7 +2,6 @@ import type { UserInfo } from '../types/models';
 
 const TOKEN_KEY = 'zhang_token';
 const USER_KEY = 'zhang_user';
-const ROLE_KEY = 'zhang_last_role';
 
 export function getToken(): string {
   return wx.getStorageSync(TOKEN_KEY) || '';
@@ -36,12 +35,4 @@ export function setCachedUser(user: UserInfo) {
 export function clearAuth() {
   wx.removeStorageSync(TOKEN_KEY);
   wx.removeStorageSync(USER_KEY);
-}
-
-export function getLastRole(): string {
-  return wx.getStorageSync(ROLE_KEY) || '';
-}
-
-export function setLastRole(role: string) {
-  wx.setStorageSync(ROLE_KEY, role || '');
 }

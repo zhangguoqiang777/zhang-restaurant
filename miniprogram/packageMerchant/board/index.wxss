@@ -1,6 +1,6 @@
 .board-page {
   min-height: 100vh;
-  padding: 24rpx 32rpx 0;
+  padding: 24rpx 32rpx 48rpx;
   background: var(--bg);
 }
 

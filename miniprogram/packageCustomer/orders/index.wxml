@@ -82,4 +82,4 @@
   </block>
 </view>
 
-<tab-bar role="customer" active="orders" />
+<tab-bar merchant="{{hasMerchant}}" active="orders" />

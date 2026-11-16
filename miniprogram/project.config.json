@@ -35,14 +35,14 @@
     "miniprogram": {
       "list": [
         {
-          "name": "入口",
-          "pathName": "pages/entry/index",
+          "name": "客户菜单",
+          "pathName": "pages/customer/menu/index",
           "query": "",
           "scene": null
         },
         {
-          "name": "客户菜单",
-          "pathName": "pages/customer/menu/index",
+          "name": "管理",
+          "pathName": "packageCommon/manage/index",
           "query": "",
           "scene": null
         },

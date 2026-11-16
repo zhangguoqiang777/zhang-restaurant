@@ -1,5 +1,5 @@
-import type { LoginResult, Role, UserInfo } from '../types/models';
-import { normalizeRole, normalizeUser, num, str } from '../utils/normalize';
+import type { LoginResult, UserInfo } from '../types/models';
+import { normalizeUser, num, str } from '../utils/normalize';
 import { request } from './request';
 
 export function wxLogin(code: string): Promise<LoginResult> {
@@ -23,7 +23,6 @@ export function wxLogin(code: string): Promise<LoginResult> {
             ? source.can_merchant
             : user.canMerchant
       ),
-      lastRole: normalizeRole(source.lastRole || source.last_role || user.lastRole) as Role,
       nickname: str(source.nickname || user.nickname)
     };
   });
@@ -31,8 +30,4 @@ export function wxLogin(code: string): Promise<LoginResult> {
 
 export function fetchMe(): Promise<UserInfo> {
   return request<any>({ url: '/me' }).then(normalizeUser);
-}
-
-export function updateMe(payload: { lastRole?: Role; nickname?: string }): Promise<UserInfo> {
-  return request<any>({ url: '/me', method: 'PATCH', data: payload }).then(normalizeUser);
 }

@@ -1,5 +1,5 @@
 import { fetchCalendarDay, fetchCalendarMonth } from '../../api/calendar';
-import type { CalendarDay, Order } from '../../types/models';
+import type { CalendarDay, Order, UserInfo } from '../../types/models';
 import { errorText } from '../../utils/error';
 import {
   buildMonthCells,
@@ -13,6 +13,7 @@ import {
   statusText,
   todayKey
 } from '../../utils/format';
+import { canManage } from '../../utils/role';
 
 interface CalendarCellView {
   key: string;
@@ -69,7 +70,8 @@ Page({
     dayOrders: [] as DayOrderView[],
     loadingDay: true,
     dayError: '',
-    monthTip: ''
+    monthTip: '',
+    hasMerchant: false
   },
 
   counts: {} as Record<string, number>,
@@ -78,6 +80,7 @@ Page({
   dayReq: 0,
 
   onLoad() {
+    this.applyUser(getApp<IAppOption>().globalData.user);
     const month = monthKey();
     const selected = todayKey();
     this.setData({
@@ -90,6 +93,27 @@ Page({
     this.renderCells();
     this.fetchMonth();
     this.fetchDay();
+  },
+
+  onShow() {
+    this.syncUser();
+  },
+
+  onPullDownRefresh() {
+    this.syncUser();
+    Promise.all([this.fetchMonth(), this.fetchDay()]).then(() => wx.stopPullDownRefresh());
+  },
+
+  applyUser(user?: UserInfo | null) {
+    if (!user) return;
+    this.setData({ hasMerchant: canManage(user) });
+  },
+
+  async syncUser() {
+    const app = getApp<IAppOption>();
+    this.applyUser(app.globalData.user);
+    const user = await app.refreshUser();
+    this.applyUser(user);
   },
 
   renderCells() {

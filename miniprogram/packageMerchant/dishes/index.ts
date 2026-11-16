@@ -7,8 +7,7 @@ import {
 } from '../../api/merchant';
 import type { Category, Dish } from '../../types/models';
 import { errorText, toastError } from '../../utils/error';
-import { guardRole } from '../../utils/role';
-import { getLastRole } from '../../utils/storage';
+import { guardManage, resolveUser } from '../../utils/role';
 
 interface DishView extends Dish {
   summary: string;
@@ -40,8 +39,7 @@ Page({
     loading: true,
     error: '',
     togglingId: 0,
-    categoryBusy: false,
-    viewRole: 'merchant'
+    categoryBusy: false
   },
 
   allDishes: [] as DishView[],
@@ -53,26 +51,36 @@ Page({
   },
 
   async bootstrap() {
-    const app = getApp<IAppOption>();
-    let user;
     try {
-      user = await app.ensureLogin();
+      const user = await resolveUser();
+      if (!guardManage(user)) return;
+      this.accessReady = true;
+      this.load(true);
     } catch (err: any) {
       this.setData({ loading: false, error: errorText(err) });
+    }
+  },
+
+  async onShow() {
+    if (!this.accessReady) return;
+    if (!(await this.ensureAccess())) return;
+    this.load(false);
+  },
+
+  async onPullDownRefresh() {
+    if (!(await this.ensureAccess())) {
+      wx.stopPullDownRefresh();
       return;
     }
-    if (!guardRole('merchant', user)) return;
-    this.setData({ viewRole: user.isSuper && getLastRole() === 'admin' ? 'admin' : 'merchant' });
-    this.accessReady = true;
-    this.load(true);
-  },
-
-  onShow() {
-    if (this.accessReady) this.load(false);
-  },
-
-  onPullDownRefresh() {
     this.load(true).then(() => wx.stopPullDownRefresh());
+  },
+
+  async ensureAccess(): Promise<boolean> {
+    const app = getApp<IAppOption>();
+    const user = await app.refreshUser();
+    if (guardManage(user)) return true;
+    this.accessReady = false;
+    return false;
   },
 
   async load(showLoading: boolean): Promise<void> {

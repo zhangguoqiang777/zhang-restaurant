@@ -1,8 +1,8 @@
-<view class="admin-page page-with-tab">
+<view class="admin-page">
   <view class="admin-hero">
     <view class="ah-main">
       <view class="ah-title">商家端访问授权</view>
-      <view class="ah-desc">从已登录用户中选择，开启后对方可进入商家视角，撤销立即生效。</view>
+      <view class="ah-desc">从已登录用户中选择，开启后对方底部会出现「管理」tab，撤销立即生效。</view>
     </view>
     <view class="admin-badge">超级用户</view>
   </view>
@@ -63,5 +63,3 @@
     </view>
   </block>
 </view>
-
-<tab-bar role="admin" active="users" />

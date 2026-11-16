@@ -1,4 +1,4 @@
-<view class="board-page page-with-tab">
+<view class="board-page">
   <view class="board-head">
     <view class="bh-title">订单看板</view>
     <view class="bh-sub">按日期看单，先处理待接单，再完成制作</view>
@@ -114,5 +114,3 @@
     </block>
   </block>
 </view>
-
-<tab-bar role="{{viewRole}}" active="board" />

@@ -87,4 +87,4 @@
   </view>
 </view>
 
-<tab-bar role="customer" active="calendar" />
+<tab-bar merchant="{{hasMerchant}}" active="calendar" />

@@ -1,4 +1,4 @@
-<view class="purchase-page page-with-tab">
+<view class="purchase-page">
   <view class="purchase-head">
     <view class="ph-title">采购清单</view>
     <view class="ph-sub">按下单时的食材快照汇总，已排除取消订单</view>
@@ -63,5 +63,3 @@
     </view>
   </block>
 </view>
-
-<tab-bar role="{{viewRole}}" active="purchase" />

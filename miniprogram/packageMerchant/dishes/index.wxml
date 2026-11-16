@@ -1,4 +1,4 @@
-<view class="dishes-page page-with-tab">
+<view class="dishes-page">
   <view class="toolbar">
     <view class="search-box">
       <view class="search-icon"></view>
@@ -99,5 +99,3 @@
     <view class="purchase-note">菜品没有价格与成本字段。未配置食材的菜品不会进入采购清单，编辑页会提示。</view>
   </block>
 </view>
-
-<tab-bar role="{{viewRole}}" active="dishes" />

@@ -11,8 +11,7 @@ import {
   statusText,
   todayKey
 } from '../../utils/format';
-import { guardRole } from '../../utils/role';
-import { getLastRole } from '../../utils/storage';
+import { guardManage, resolveUser } from '../../utils/role';
 
 interface BoardOrder extends Order {
   statusText: string;
@@ -73,8 +72,7 @@ Page({
     groups: [] as BoardGroup[],
     loading: true,
     error: '',
-    processingId: 0,
-    viewRole: 'merchant'
+    processingId: 0
   },
 
   timer: 0,
@@ -88,26 +86,22 @@ Page({
   },
 
   async bootstrap() {
-    const app = getApp<IAppOption>();
-    let user;
     try {
-      user = await app.ensureLogin();
+      const user = await resolveUser();
+      if (!guardManage(user)) return;
+      this.accessReady = true;
+      this.load(true);
+      this.startTimer();
     } catch (err: any) {
       this.setData({ loading: false, error: errorText(err) });
-      return;
     }
-    if (!guardRole('merchant', user)) return;
-    this.setData({ viewRole: user.isSuper && getLastRole() === 'admin' ? 'admin' : 'merchant' });
-    this.accessReady = true;
-    this.load(true);
-    this.startTimer();
   },
 
-  onShow() {
-    if (this.accessReady) {
-      this.load(false);
-      this.startTimer();
-    }
+  async onShow() {
+    if (!this.accessReady) return;
+    if (!(await this.ensureAccess())) return;
+    this.load(false);
+    this.startTimer();
   },
 
   onHide() {
@@ -118,8 +112,22 @@ Page({
     this.stopTimer();
   },
 
-  onPullDownRefresh() {
+  async onPullDownRefresh() {
+    if (!(await this.ensureAccess())) {
+      wx.stopPullDownRefresh();
+      return;
+    }
     this.load(true).then(() => wx.stopPullDownRefresh());
+  },
+
+  /** 进入或下拉刷新时校准权限；被撤销则回可访问页面 */
+  async ensureAccess(): Promise<boolean> {
+    const app = getApp<IAppOption>();
+    const user = await app.refreshUser();
+    if (guardManage(user)) return true;
+    this.stopTimer();
+    this.accessReady = false;
+    return false;
   },
 
   startTimer() {

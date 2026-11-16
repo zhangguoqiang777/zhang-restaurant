@@ -1,7 +1,8 @@
 import { cancelOrder, fetchOrders } from '../../api/orders';
-import type { Order, OrderItem } from '../../types/models';
+import type { Order, OrderItem, UserInfo } from '../../types/models';
 import { errorText, toastError } from '../../utils/error';
 import { formatClock, formatOrderTime, statusPillClass, statusText } from '../../utils/format';
+import { canManage } from '../../utils/role';
 
 interface OrderView extends Order {
   statusText: string;
@@ -47,18 +48,21 @@ Page({
     orders: [] as OrderView[],
     allOrders: [] as OrderView[],
     loading: true,
-    error: ''
+    error: '',
+    hasMerchant: false
   },
 
   timer: 0,
   loadingLock: false,
 
   onLoad() {
+    this.applyUser(getApp<IAppOption>().globalData.user);
     this.load(true);
   },
 
   onShow() {
     if (!this.data.loading) this.load(false);
+    this.syncUser();
     this.startTimer();
   },
 
@@ -71,7 +75,20 @@ Page({
   },
 
   onPullDownRefresh() {
+    this.syncUser();
     this.load(true).then(() => wx.stopPullDownRefresh());
+  },
+
+  applyUser(user?: UserInfo | null) {
+    if (!user) return;
+    this.setData({ hasMerchant: canManage(user) });
+  },
+
+  async syncUser() {
+    const app = getApp<IAppOption>();
+    this.applyUser(app.globalData.user);
+    const user = await app.refreshUser();
+    this.applyUser(user);
   },
 
   startTimer() {

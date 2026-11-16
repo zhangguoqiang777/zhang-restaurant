@@ -26,4 +26,5 @@ interface IAppOption {
   };
   ensureLogin(force?: boolean): Promise<any>;
   setUser(user: any): void;
+  refreshUser(): Promise<any>;
 }

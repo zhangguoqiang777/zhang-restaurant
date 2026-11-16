@@ -1,7 +1,4 @@
 {
   "navigationBarTitleText": "用户授权",
-  "enablePullDownRefresh": true,
-  "usingComponents": {
-    "tab-bar": "/components/tab-bar/index"
-  }
+  "enablePullDownRefresh": true
 }

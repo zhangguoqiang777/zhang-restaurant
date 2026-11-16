@@ -2,7 +2,7 @@ import { fetchAdminUsers, setMerchantAccess } from '../../api/admin';
 import type { AdminUser, UserInfo } from '../../types/models';
 import { errorText, toastError } from '../../utils/error';
 import { formatLoginTime, initial, maskOpenid } from '../../utils/format';
-import { guardRole } from '../../utils/role';
+import { guardAdmin, resolveUser } from '../../utils/role';
 
 interface AdminUserView extends AdminUser {
   avatarChar: string;
@@ -25,7 +25,7 @@ function toView(user: AdminUser, selfId: number, index: number): AdminUserView {
     avatarClass: AVATAR_TONES[index % AVATAR_TONES.length],
     openidMasked: maskOpenid(user.openid),
     lastText: `最近登录：${user.lastLoginAt ? formatLoginTime(user.lastLoginAt) : '—'}`,
-    statusText: user.isSuper ? '超级用户 · 不可修改' : user.canMerchant ? '已授权商家端' : '仅客户视角',
+    statusText: user.isSuper ? '超级用户 · 不可修改' : user.canMerchant ? '已授权商家端' : '仅客户权限',
     isSelf,
     locked
   };
@@ -51,22 +51,29 @@ Page({
   },
 
   async bootstrap() {
-    const app = getApp<IAppOption>();
     let user: UserInfo;
     try {
-      user = await app.ensureLogin();
+      user = await resolveUser();
     } catch (err: any) {
       this.setData({ loading: false, error: errorText(err) });
       return;
     }
-    if (!guardRole('admin', user)) return;
+    if (!guardAdmin(user)) return;
     this.selfId = user.id;
     this.accessReady = true;
     this.load(true);
   },
 
-  onShow() {
-    if (this.accessReady) this.load(false);
+  async onShow() {
+    if (!this.accessReady) return;
+    const app = getApp<IAppOption>();
+    const user = await app.refreshUser();
+    if (!guardAdmin(user)) {
+      this.accessReady = false;
+      return;
+    }
+    this.selfId = user.id;
+    this.load(false);
   },
 
   onUnload() {
@@ -76,7 +83,14 @@ Page({
     }
   },
 
-  onPullDownRefresh() {
+  async onPullDownRefresh() {
+    const app = getApp<IAppOption>();
+    const user = await app.refreshUser();
+    if (!guardAdmin(user)) {
+      wx.stopPullDownRefresh();
+      return;
+    }
+    this.selfId = user.id;
     this.load(true).then(() => wx.stopPullDownRefresh());
   },
 
@@ -122,7 +136,7 @@ Page({
           ? {
               ...item,
               canMerchant: next,
-              statusText: next ? '已授权商家端' : '仅客户视角'
+              statusText: next ? '已授权商家端' : '仅客户权限'
             }
           : item
       )

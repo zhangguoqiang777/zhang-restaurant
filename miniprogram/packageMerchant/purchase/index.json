@@ -1,7 +1,4 @@
 {
   "navigationBarTitleText": "采购清单",
-  "enablePullDownRefresh": true,
-  "usingComponents": {
-    "tab-bar": "/components/tab-bar/index"
-  }
+  "enablePullDownRefresh": true
 }

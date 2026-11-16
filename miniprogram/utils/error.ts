@@ -37,9 +37,9 @@ export function toastError(err: any, redirectOnAuth = true) {
   if (code === 'AUTH_REQUIRED' || code === 'ROLE_FORBIDDEN') {
     const pages = getCurrentPages();
     const current = pages.length ? pages[pages.length - 1].route || '' : '';
-    if (current.indexOf('pages/entry/index') === -1) {
+    if (current !== 'pages/customer/menu/index') {
       setTimeout(() => {
-        wx.reLaunch({ url: '/pages/entry/index?force=1' });
+        wx.reLaunch({ url: '/pages/customer/menu/index' });
       }, 1000);
     }
   }

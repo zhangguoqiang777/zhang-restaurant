@@ -1,5 +1,6 @@
 {
   "navigationBarTitleText": "点餐",
+  "enablePullDownRefresh": true,
   "usingComponents": {
     "tab-bar": "/components/tab-bar/index",
     "dish-art": "/components/dish-art/index"

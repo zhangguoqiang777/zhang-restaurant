@@ -13,7 +13,6 @@ import type {
   PurchaseSummary,
   Review,
   ReviewItem,
-  Role,
   UserInfo
 } from '../types/models';
 
@@ -29,11 +28,6 @@ export function num(value: any): number {
 
 export function bool(value: any): boolean {
   return value === true || value === 1 || value === '1';
-}
-
-export function normalizeRole(value: any): Role {
-  if (value === 'merchant' || value === 'admin' || value === 'customer') return value;
-  return 'customer';
 }
 
 export function normalizeStatus(value: any): OrderStatus {
@@ -59,7 +53,6 @@ export function normalizeUser(raw: any): UserInfo {
     nickname: str(source.nickname),
     isSuper: bool(source.isSuper !== undefined ? source.isSuper : source.is_super),
     canMerchant: bool(source.canMerchant !== undefined ? source.canMerchant : source.can_merchant),
-    lastRole: normalizeRole(source.lastRole !== undefined ? source.lastRole : source.last_role),
     openid: str(source.openid || source.openidMasked || source.openid_masked),
     lastLoginAt: str(source.lastLoginAt || source.last_login_at),
     createdAt: str(source.createdAt || source.created_at)

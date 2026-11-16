@@ -93,4 +93,4 @@
   <view class="cart-go">去下单</view>
 </view>
 
-<tab-bar role="customer" active="menu" />
+<tab-bar merchant="{{hasMerchant}}" active="menu" />

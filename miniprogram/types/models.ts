@@ -1,5 +1,3 @@
-export type Role = 'customer' | 'merchant' | 'admin';
-
 export type OrderStatus = 'pending' | 'cooking' | 'completed';
 
 export interface UserInfo {
@@ -7,7 +5,6 @@ export interface UserInfo {
   nickname: string;
   isSuper: boolean;
   canMerchant: boolean;
-  lastRole: Role;
   openid?: string;
   lastLoginAt?: string;
   createdAt?: string;
@@ -18,7 +15,6 @@ export interface LoginResult {
   userId: number;
   isSuper: boolean;
   canMerchant: boolean;
-  lastRole: Role;
   nickname?: string;
 }
 

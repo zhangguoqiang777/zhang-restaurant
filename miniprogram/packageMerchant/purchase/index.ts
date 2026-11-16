@@ -2,8 +2,7 @@ import { fetchPurchases } from '../../api/merchant';
 import type { PurchaseIngredient } from '../../types/models';
 import { errorText } from '../../utils/error';
 import { dateKey, formatDateCN, todayKey } from '../../utils/format';
-import { guardRole } from '../../utils/role';
-import { getLastRole } from '../../utils/storage';
+import { guardManage, resolveUser } from '../../utils/role';
 
 interface IngredientView extends PurchaseIngredient {
   glyph: string;
@@ -55,8 +54,7 @@ Page({
     ingredientCount: 0,
     items: [] as IngredientView[],
     loading: true,
-    error: '',
-    viewRole: 'merchant'
+    error: ''
   },
 
   timer: 0,
@@ -70,26 +68,22 @@ Page({
   },
 
   async bootstrap() {
-    const app = getApp<IAppOption>();
-    let user;
     try {
-      user = await app.ensureLogin();
+      const user = await resolveUser();
+      if (!guardManage(user)) return;
+      this.accessReady = true;
+      this.load(true);
+      this.startTimer();
     } catch (err: any) {
       this.setData({ loading: false, error: errorText(err) });
-      return;
     }
-    if (!guardRole('merchant', user)) return;
-    this.setData({ viewRole: user.isSuper && getLastRole() === 'admin' ? 'admin' : 'merchant' });
-    this.accessReady = true;
-    this.load(true);
-    this.startTimer();
   },
 
-  onShow() {
-    if (this.accessReady) {
-      this.load(false);
-      this.startTimer();
-    }
+  async onShow() {
+    if (!this.accessReady) return;
+    if (!(await this.ensureAccess())) return;
+    this.load(false);
+    this.startTimer();
   },
 
   onHide() {
@@ -100,8 +94,21 @@ Page({
     this.stopTimer();
   },
 
-  onPullDownRefresh() {
+  async onPullDownRefresh() {
+    if (!(await this.ensureAccess())) {
+      wx.stopPullDownRefresh();
+      return;
+    }
     this.load(true).then(() => wx.stopPullDownRefresh());
+  },
+
+  async ensureAccess(): Promise<boolean> {
+    const app = getApp<IAppOption>();
+    const user = await app.refreshUser();
+    if (guardManage(user)) return true;
+    this.stopTimer();
+    this.accessReady = false;
+    return false;
   },
 
   startTimer() {
